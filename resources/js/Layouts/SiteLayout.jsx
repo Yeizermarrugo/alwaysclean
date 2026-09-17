@@ -6,9 +6,9 @@ export default function SiteLayout({ title, showTopbar = false, showActions = tr
     return (
         <>
             <Head title={title} />
-            <div className="min-h-screen bg-white">
+            <div className="flex min-h-screen flex-col bg-white">
                 <Header showTopbar={showTopbar} showActions={showActions} compact={compact} />
-                <main>{children}</main>
+                <main className="flex-1">{children}</main>
                 <Footer />
             </div>
         </>

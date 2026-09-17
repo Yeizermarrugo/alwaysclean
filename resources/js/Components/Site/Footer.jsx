@@ -1,4 +1,4 @@
-import { usePage } from '@inertiajs/react';
+import { Link, usePage } from '@inertiajs/react';
 
 export default function Footer() {
     const { empresa } = usePage().props;
@@ -10,6 +10,10 @@ export default function Footer() {
                     {empresa.nombre.toUpperCase()}
                 </div>
                 {empresa.razon_social}. NIT {empresa.nit}.
+                <div className="mt-3 flex flex-col gap-1">
+                    <Link href={route('nosotros.index')} className="hover:text-white">Nosotros</Link>
+                    <Link href={route('politicas.index')} className="hover:text-white">Política integral</Link>
+                </div>
             </div>
             <div>
                 <div className="mb-2 font-display text-[12.5px] font-semibold text-white">Servicios</div>

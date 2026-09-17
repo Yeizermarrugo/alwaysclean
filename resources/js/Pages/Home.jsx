@@ -1,8 +1,8 @@
 import { Link, usePage } from '@inertiajs/react';
 import SiteLayout from '@/Layouts/SiteLayout';
-import PlaceholderPhoto from '@/Components/Site/PlaceholderPhoto';
 import ServiceCard from '@/Components/Site/ServiceCard';
 import ServiceRow from '@/Components/Site/ServiceRow';
+import ClientesCarousel from '@/Components/Site/ClientesCarousel';
 import { waLink } from '@/lib/whatsapp';
 
 const SEGMENTOS = [
@@ -70,7 +70,11 @@ export default function Home({ destacados, todos, conteos, productos }) {
                         </div>
                     </div>
                 </div>
-                <PlaceholderPhoto hint="foto: cuadrilla en operación" className="min-h-[280px] p-4 lg:min-h-[520px]" />
+                <img
+                    src="https://images.unsplash.com/photo-1627905646269-7f034dcc5738?auto=format&fit=crop&w=1200&q=75"
+                    alt="Cuadrilla de aseo en operación"
+                    className="min-h-[280px] w-full object-cover lg:min-h-[520px]"
+                />
             </div>
 
             {/* Segmentos */}
@@ -192,6 +196,15 @@ export default function Home({ destacados, todos, conteos, productos }) {
                     </div>
                 </div>
             </div>
+
+            {/* Clientes que nos respaldan */}
+            <div className="border-t border-mist-300 px-5 pt-10 lg:px-10">
+                <div className="mb-1 text-center font-sans text-[11px] font-semibold tracking-[0.14em] text-green-dark">
+                    CLIENTES QUE NOS RESPALDAN
+                </div>
+                <p className="mb-2 text-center text-[14.5px] text-navy-500">Empresas y entidades que confían en Always Clean.</p>
+            </div>
+            <ClientesCarousel />
         </SiteLayout>
     );
 }

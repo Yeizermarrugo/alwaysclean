@@ -4,12 +4,12 @@ const NAV = [
     { label: 'Cotizaciones', route: 'interno.bandeja' },
     { label: 'Servicios', route: 'interno.servicios.index' },
     { label: 'Productos', route: 'interno.productos.index' },
-    { label: 'PQRS' },
+    { label: 'PQRS', route: 'interno.pqrs.index' },
     { label: 'Cuadrillas' },
 ];
 
 export default function InternoLayout({ title, children }) {
-    const { auth } = usePage().props;
+    const { auth, pqrsPendientes } = usePage().props;
     const currentRoute = route().current();
 
     const logout = () => router.post(route('interno.logout'));
@@ -31,9 +31,14 @@ export default function InternoLayout({ title, children }) {
                             <Link
                                 key={item.label}
                                 href={route(item.route)}
-                                className={currentRoute === item.route ? 'text-green-bright' : 'text-white/70 hover:text-white'}
+                                className={`relative inline-flex items-center gap-1.5 ${currentRoute === item.route ? 'text-green-bright' : 'text-white/70 hover:text-white'}`}
                             >
                                 {item.label}
+                                {item.route === 'interno.pqrs.index' && pqrsPendientes > 0 && (
+                                    <span className="grid h-[18px] min-w-[18px] place-items-center rounded-full bg-alert px-1 font-sans text-[10.5px] font-bold text-white">
+                                        {pqrsPendientes}
+                                    </span>
+                                )}
                             </Link>
                         ) : (
                             <span key={item.label} className="text-white/40">{item.label}</span>

@@ -11,7 +11,11 @@ class PqrsCaso extends Model
 
     protected $fillable = [
         'caso', 'tipo', 'nombre', 'documento', 'email', 'telefono',
-        'servicio_relacionado', 'numero_orden', 'descripcion', 'estado',
+        'servicio_relacionado', 'numero_orden', 'descripcion', 'estado', 'leido_at',
+    ];
+
+    protected $casts = [
+        'leido_at' => 'datetime',
     ];
 
     public const TIPOS = [
@@ -20,6 +24,12 @@ class PqrsCaso extends Model
         'reclamo' => 'Reclamo',
         'sugerencia' => 'Sugerencia',
         'felicitacion' => 'Felicitación',
+    ];
+
+    public const ESTADOS = [
+        'radicado' => 'Radicado',
+        'en_proceso' => 'En proceso',
+        'cerrado' => 'Cerrado',
     ];
 
     protected static function booted(): void

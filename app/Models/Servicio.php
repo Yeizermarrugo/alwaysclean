@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
 
 class Servicio extends Model
 {
@@ -32,7 +33,13 @@ class Servicio extends Model
 
     public function getImagenUrlAttribute(): ?string
     {
-        return $this->imagen ? '/storage/'.$this->imagen : null;
+        if (!$this->imagen) {
+            return null;
+        }
+
+        return Str::startsWith($this->imagen, ['http://', 'https://'])
+            ? $this->imagen
+            : '/storage/'.$this->imagen;
     }
 
     public function getRouteKeyName(): string

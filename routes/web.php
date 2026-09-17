@@ -3,8 +3,11 @@
 use App\Http\Controllers\Auth\SessionController;
 use App\Http\Controllers\ContactoController;
 use App\Http\Controllers\Interno\ProductoController as InternoProductoController;
+use App\Http\Controllers\Interno\PqrsController as InternoPqrsController;
 use App\Http\Controllers\Interno\ServicioController as InternoServicioController;
 use App\Http\Controllers\InternoController;
+use App\Http\Controllers\NosotrosController;
+use App\Http\Controllers\PoliticasController;
 use App\Http\Controllers\PqrsController;
 use App\Http\Controllers\ProductoController;
 use App\Http\Controllers\ServicioController;
@@ -16,6 +19,9 @@ Route::get('/servicios', [ServicioController::class, 'index'])->name('servicios.
 Route::get('/servicios/{servicio:slug}', [ServicioController::class, 'show'])->name('servicios.show');
 
 Route::get('/productos', [ProductoController::class, 'index'])->name('productos.index');
+
+Route::get('/nosotros', [NosotrosController::class, 'index'])->name('nosotros.index');
+Route::get('/politicas', [PoliticasController::class, 'index'])->name('politicas.index');
 
 Route::get('/contacto', [ContactoController::class, 'create'])->name('contacto.create');
 Route::post('/contacto', [ContactoController::class, 'store'])->name('contacto.store');
@@ -43,4 +49,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/interno/productos', [InternoProductoController::class, 'store'])->name('interno.productos.store');
     Route::patch('/interno/productos/{producto:id}', [InternoProductoController::class, 'update'])->name('interno.productos.update');
     Route::delete('/interno/productos/{producto:id}', [InternoProductoController::class, 'destroy'])->name('interno.productos.destroy');
+
+    Route::get('/interno/pqrs', [InternoPqrsController::class, 'index'])->name('interno.pqrs.index');
+    Route::patch('/interno/pqrs/{pqrsCaso}', [InternoPqrsController::class, 'update'])->name('interno.pqrs.update');
 });

@@ -4,6 +4,7 @@ import { waLink } from '@/lib/whatsapp';
 
 const NAV = [
     { label: 'Inicio', route: 'home' },
+    { label: 'Nosotros', route: 'nosotros.index' },
     { label: 'Servicios', route: 'servicios.index' },
     { label: 'Productos', route: 'productos.index' },
     { label: 'Contacto', route: 'contacto.create' },

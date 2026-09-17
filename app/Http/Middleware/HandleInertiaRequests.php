@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\PqrsCaso;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
 
@@ -38,6 +39,7 @@ class HandleInertiaRequests extends Middleware
             'flash' => [
                 'caso' => fn () => $request->session()->get('caso'),
             ],
+            'pqrsPendientes' => fn () => $request->user() ? PqrsCaso::whereNull('leido_at')->count() : 0,
         ];
     }
 }
