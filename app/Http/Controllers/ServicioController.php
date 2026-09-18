@@ -13,8 +13,8 @@ class ServicioController extends Controller
     public function home(): Response
     {
         return Inertia::render('Home', [
-            'destacados' => Servicio::orderBy('orden')->where('destacado', true)->limit(8)->get(),
-            'todos' => Servicio::orderBy('orden')->get(['id', 'codigo', 'slug', 'nombre', 'meta']),
+            'destacados' => Servicio::activos()->orderBy('orden')->where('destacado', true)->limit(8)->get(),
+            'todos' => Servicio::activos()->orderBy('orden')->get(['id', 'codigo', 'slug', 'nombre', 'meta']),
             'conteos' => $this->conteosPorCategoria(),
             'productos' => Producto::orderBy('orden')->get(),
         ]);
@@ -24,7 +24,7 @@ class ServicioController extends Controller
     {
         $categoria = $request->query('categoria');
 
-        $servicios = Servicio::orderBy('orden')
+        $servicios = Servicio::activos()->orderBy('orden')
             ->when($categoria, fn ($query) => $query->where('categoria', $categoria))
             ->get();
 
@@ -38,6 +38,8 @@ class ServicioController extends Controller
 
     public function show(Servicio $servicio): Response
     {
+        abort_unless($servicio->activo, 404);
+
         $servicio->load('imagenes');
 
         return Inertia::render('Servicios/Show', [
@@ -47,7 +49,7 @@ class ServicioController extends Controller
 
     private function conteosPorCategoria(): array
     {
-        return Servicio::selectRaw('categoria, count(*) as total')
+        return Servicio::activos()->selectRaw('categoria, count(*) as total')
             ->groupBy('categoria')
             ->pluck('total', 'categoria')
             ->toArray();

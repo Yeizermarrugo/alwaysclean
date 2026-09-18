@@ -42,6 +42,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/interno/servicios', [InternoServicioController::class, 'index'])->name('interno.servicios.index');
     Route::post('/interno/servicios', [InternoServicioController::class, 'store'])->name('interno.servicios.store');
     Route::patch('/interno/servicios/{servicio:id}', [InternoServicioController::class, 'update'])->name('interno.servicios.update');
+    Route::patch('/interno/servicios/{servicio:id}/activo', [InternoServicioController::class, 'toggleActivo'])->name('interno.servicios.toggle-activo');
     Route::delete('/interno/servicios/{servicio:id}', [InternoServicioController::class, 'destroy'])->name('interno.servicios.destroy');
     Route::delete('/interno/servicios/{servicio:id}/imagenes/{imagen}', [InternoServicioController::class, 'destroyImagen'])->name('interno.servicios.imagenes.destroy');
 

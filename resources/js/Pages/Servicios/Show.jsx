@@ -53,13 +53,13 @@ export default function ServicioShow({ servicio }) {
                     <p className="mb-5 text-[15.5px] leading-relaxed text-navy-600 text-pretty">{servicio.descripcion}</p>
 
                     {galeria.length > 0 ? (
-                        <button type="button" onClick={() => setLightboxIndex(0)} className="mb-3.5 block h-[250px] w-full">
-                            <img src={galeria[0].imagen_url} alt={servicio.nombre} className="h-full w-full rounded-xl object-cover" />
+                        <button type="button" onClick={() => setLightboxIndex(0)} className="mb-3.5 block aspect-[4/3] w-full lg:aspect-[16/10]">
+                            <img src={galeria[0].imagen_url} alt={servicio.nombre} className="h-full w-full rounded-xl object-cover object-top" />
                         </button>
                     ) : servicio.imagen_url ? (
-                        <img src={servicio.imagen_url} alt={servicio.nombre} className="mb-3.5 h-[250px] w-full rounded-xl object-cover" />
+                        <img src={servicio.imagen_url} alt={servicio.nombre} className="mb-3.5 aspect-[4/3] w-full rounded-xl object-cover object-top lg:aspect-[16/10]" />
                     ) : (
-                        <PlaceholderPhoto hint={servicio.imagen_hint} className="mb-3.5 h-[250px] rounded-xl p-3.5" />
+                        <PlaceholderPhoto hint={servicio.imagen_hint} className="mb-3.5 aspect-[4/3] rounded-xl p-3.5 lg:aspect-[16/10]" />
                     )}
 
                     {galeria.length > 0 && (

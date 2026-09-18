@@ -31,7 +31,7 @@ export default function Header({ showTopbar = false, showActions = true, compact
             )}
             <div className={`flex items-center justify-between border-b border-mist-300 bg-white px-4 py-2.5 lg:px-10 ${compact ? '' : 'md:py-3'}`}>
                 <Link href={route('home')}>
-                    <img src="/images/logo.png" alt="Always Clean Colombia" className={compact ? 'h-9' : 'h-9 md:h-11'} />
+                    <img src="/images/logo.png" alt="Always Clean Colombia" className={compact ? 'h-12' : 'h-12 md:h-14'} />
                 </Link>
 
                 <nav className="hidden items-center gap-6 font-display text-[13.5px] font-semibold md:flex">

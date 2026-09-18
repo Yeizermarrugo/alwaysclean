@@ -8,9 +8,9 @@ export default function ServiceCard({ servicio, categoriaLabel }) {
             className="flex flex-col overflow-hidden rounded-[10px] border border-mist-300 transition hover:border-green"
         >
             {servicio.imagen_url ? (
-                <img src={servicio.imagen_url} alt={servicio.nombre} className="h-28 w-full object-cover md:h-[132px]" />
+                <img src={servicio.imagen_url} alt={servicio.nombre} className="aspect-[4/3] w-full object-cover object-top" />
             ) : (
-                <PlaceholderPhoto hint={servicio.imagen_hint} className="h-28 md:h-[132px]" />
+                <PlaceholderPhoto hint={servicio.imagen_hint} className="aspect-[4/3]" />
             )}
             <div className="flex flex-1 flex-col gap-1.5 px-4 py-3.5">
                 <span className="font-sans text-[10px] font-semibold tracking-[0.12em] text-green-dark">

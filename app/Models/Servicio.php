@@ -9,7 +9,7 @@ class Servicio extends Model
 {
     protected $fillable = [
         'codigo', 'slug', 'categoria', 'nombre', 'resumen', 'descripcion',
-        'meta', 'imagen_hint', 'imagen', 'incluye', 'sectores', 'destacado', 'orden',
+        'meta', 'imagen_hint', 'imagen', 'incluye', 'sectores', 'destacado', 'activo', 'orden',
     ];
 
     protected $appends = ['imagen_url'];
@@ -18,6 +18,7 @@ class Servicio extends Model
         'incluye' => 'array',
         'sectores' => 'array',
         'destacado' => 'boolean',
+        'activo' => 'boolean',
     ];
 
     public const CATEGORIAS = [
@@ -45,6 +46,11 @@ class Servicio extends Model
     public function getRouteKeyName(): string
     {
         return 'slug';
+    }
+
+    public function scopeActivos($query)
+    {
+        return $query->where('activo', true);
     }
 
     public function imagenes()
