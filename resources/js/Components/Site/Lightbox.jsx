@@ -22,7 +22,7 @@ export default function Lightbox({ imagenes, index, onClose, onChange }) {
                 <button onClick={onClose} className="grid h-9 w-9 place-items-center rounded-lg text-xl hover:bg-white/10">✕</button>
             </div>
 
-            <div className="relative flex flex-1 items-center justify-center" onClick={(e) => e.stopPropagation()}>
+            <div className="relative flex min-h-0 flex-1 items-center justify-center" onClick={(e) => e.stopPropagation()}>
                 {imagenes.length > 1 && (
                     <button
                         onClick={() => onChange((index - 1 + imagenes.length) % imagenes.length)}

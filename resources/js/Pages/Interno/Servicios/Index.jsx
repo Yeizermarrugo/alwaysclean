@@ -7,7 +7,7 @@ import ImageField from '@/Components/Interno/ImageField';
 const vacio = {
     codigo: '', categoria: 'limpieza', nombre: '', resumen: '', descripcion: '',
     meta: '', imagen_hint: '', imagen: null, quitar_imagen: false, imagenes: [],
-    incluye: '', sectores: '', destacado: false, orden: 1, _method: '',
+    incluye: '', sectores: '', destacado: false, activo: true, orden: 1, _method: '',
 };
 
 export default function ServiciosIndex({ servicios, categorias }) {
@@ -28,7 +28,7 @@ export default function ServiciosIndex({ servicios, categorias }) {
             descripcion: s.descripcion, meta: s.meta, imagen_hint: s.imagen_hint,
             imagen: null, quitar_imagen: false, imagenes: [],
             incluye: s.incluye.join('\n'), sectores: s.sectores.join(', '),
-            destacado: s.destacado, orden: s.orden, _method: 'patch',
+            destacado: s.destacado, activo: s.activo, orden: s.orden, _method: 'patch',
         });
         setGaleria(s.imagenes ?? []);
         setEditando(s);
@@ -58,11 +58,11 @@ export default function ServiciosIndex({ servicios, categorias }) {
             </div>
 
             <div className="px-5 pb-10 lg:px-7">
-                <div className="hidden grid-cols-[46px_50px_1.4fr_1fr_.7fr_.5fr_auto] gap-3 border-b border-mist-300 pb-2.5 font-sans text-[10.5px] font-semibold tracking-[0.1em] text-ink-500 lg:grid">
-                    <span></span><span>COD</span><span>NOMBRE</span><span>CATEGORÍA</span><span>DESTACADO</span><span>ORDEN</span><span></span>
+                <div className="hidden grid-cols-[46px_50px_1.4fr_1fr_.7fr_.6fr_.5fr_auto] gap-3 border-b border-mist-300 pb-2.5 font-sans text-[10.5px] font-semibold tracking-[0.1em] text-ink-500 lg:grid">
+                    <span></span><span>COD</span><span>NOMBRE</span><span>CATEGORÍA</span><span>DESTACADO</span><span>ESTADO</span><span>ORDEN</span><span></span>
                 </div>
                 {servicios.map((s) => (
-                    <div key={s.id} className="grid grid-cols-2 items-center gap-x-3 gap-y-1 border-b border-mist-200 py-3 text-[13px] text-navy-600 lg:grid-cols-[46px_50px_1.4fr_1fr_.7fr_.5fr_auto]">
+                    <div key={s.id} className={`grid grid-cols-2 items-center gap-x-3 gap-y-1 border-b border-mist-200 py-3 text-[13px] text-navy-600 lg:grid-cols-[46px_50px_1.4fr_1fr_.7fr_.6fr_.5fr_auto] ${!s.activo ? 'opacity-50' : ''}`}>
                         <div className="hidden lg:block">
                             {s.imagen_url ? (
                                 <img src={s.imagen_url} alt="" className="h-9 w-9 rounded object-cover" />
@@ -81,6 +81,7 @@ export default function ServiciosIndex({ servicios, categorias }) {
                         </span>
                         <span>{categorias[s.categoria]}</span>
                         <span>{s.destacado ? 'Sí' : '—'}</span>
+                        <ToggleActivoButton servicio={s} />
                         <span>{s.orden}</span>
                         <div className="flex gap-3 justify-self-end font-display text-[12.5px] font-semibold">
                             <button onClick={() => abrirEditar(s)} className="text-navy-700 hover:text-green-dark">Editar</button>
@@ -108,8 +109,10 @@ export default function ServiciosIndex({ servicios, categorias }) {
                         {galeria.length > 0 && (
                             <div className="mb-2 flex flex-wrap gap-2">
                                 {galeria.map((img) => (
-                                    <div key={img.id} className="relative h-16 w-16">
-                                        <img src={img.imagen_url} alt="" className="h-16 w-16 rounded-lg object-cover" />
+                                    <div key={img.id} className="relative h-20 w-20 shrink-0">
+                                        <div className="grid h-20 w-20 place-items-center overflow-hidden rounded-lg bg-mist-100">
+                                            <img src={img.imagen_url} alt="" className="h-full w-full object-contain" />
+                                        </div>
                                         <button
                                             type="button"
                                             onClick={() => borrarFotoGaleria(img)}
@@ -176,12 +179,28 @@ export default function ServiciosIndex({ servicios, categorias }) {
                             Destacado en Inicio
                         </label>
                     </div>
+                    <label className="flex items-center gap-2 text-[13.5px] text-navy">
+                        <input type="checkbox" checked={data.activo} onChange={(e) => setData('activo', e.target.checked)} />
+                        Visible en el sitio público (desmarcar para ocultarlo sin eliminarlo)
+                    </label>
                     <button type="submit" disabled={processing} className="rounded-lg bg-navy py-3 font-display text-[14px] font-semibold text-white disabled:opacity-40">
                         Guardar
                     </button>
                 </form>
             </Modal>
         </InternoLayout>
+    );
+}
+
+function ToggleActivoButton({ servicio }) {
+    const toggle = () => router.patch(route('interno.servicios.toggle-activo', servicio.id), {}, { preserveScroll: true });
+    return (
+        <button
+            onClick={toggle}
+            className={`justify-self-start rounded-full px-2.5 py-1 font-display text-[11px] font-semibold ${servicio.activo ? 'bg-green/10 text-green-dark' : 'bg-mist-200 text-ink-500'}`}
+        >
+            {servicio.activo ? 'Visible' : 'Oculto'}
+        </button>
     );
 }
 

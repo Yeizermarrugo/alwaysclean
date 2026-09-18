@@ -21,7 +21,7 @@ export default function InternoLayout({ title, children }) {
             <div className="flex flex-wrap items-center justify-between gap-3 bg-navy px-5 py-2.5 lg:px-7">
                 <div className="flex items-center gap-3">
                     <div className="rounded-md bg-white px-2 py-1">
-                        <img src="/images/logo.png" alt="Always Clean Colombia" className="h-7" />
+                        <img src="/images/logo.png" alt="Always Clean Colombia" className="h-9" />
                     </div>
                     <span className="hidden text-[12.5px] text-white/60 sm:inline">Panel comercial</span>
                 </div>

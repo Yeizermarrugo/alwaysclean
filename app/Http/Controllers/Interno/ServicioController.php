@@ -58,6 +58,13 @@ class ServicioController extends Controller
         return back();
     }
 
+    public function toggleActivo(Servicio $servicio)
+    {
+        $servicio->update(['activo' => ! $servicio->activo]);
+
+        return back();
+    }
+
     public function destroy(Servicio $servicio)
     {
         if ($servicio->imagen) {
@@ -114,6 +121,7 @@ class ServicioController extends Controller
             'incluye' => ['required', 'string'],
             'sectores' => ['required', 'string'],
             'destacado' => ['boolean'],
+            'activo' => ['boolean'],
             'orden' => ['required', 'integer', 'min:0'],
         ]);
 
@@ -122,6 +130,7 @@ class ServicioController extends Controller
         $data['incluye'] = array_values(array_filter(array_map('trim', explode("\n", $data['incluye']))));
         $data['sectores'] = array_values(array_filter(array_map('trim', explode(',', $data['sectores']))));
         $data['destacado'] = $request->boolean('destacado');
+        $data['activo'] = $request->boolean('activo', true);
         $data['imagen_hint'] = $data['imagen_hint'] ?? '';
 
         return $data;
