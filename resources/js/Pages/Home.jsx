@@ -137,63 +137,68 @@ export default function Home({ destacados, todos, conteos, productos }) {
                 ))}
             </div>
 
-            {/* Productos + testimonio */}
-            <div className="grid items-center gap-9 bg-mist-50 px-5 py-12 lg:grid-cols-2 lg:px-10 lg:py-14">
-                <div>
-                    <h2 className="mb-2 font-display text-[26px] font-extrabold tracking-tight text-navy lg:text-[30px]">
-                        Productos especializados
-                    </h2>
-                    <p className="mb-5 max-w-[420px] text-[15px] leading-relaxed text-navy-500">
-                        Línea propia de solventes biodegradables para trampas de grasa, drenajes y orinales.
-                    </p>
-                    <div className="flex flex-col gap-2.5">
-                        {productos.map((p) => (
-                            <Link
-                                key={p.id}
-                                href={route('productos.index')}
-                                className="flex items-center gap-3.5 rounded-[10px] border border-mist-300 bg-white px-3.5 py-3"
-                            >
+            {/* Productos */}
+            <div className="bg-mist-50 px-5 py-12 lg:px-10 lg:py-14">
+                <div className="mb-7 flex flex-col items-start justify-between gap-3 sm:flex-row sm:items-end">
+                    <div>
+                        <div className="mb-1.5 font-sans text-[11px] font-semibold tracking-[0.14em] text-green-dark">LÍNEA PROPIA</div>
+                        <h2 className="mb-2 font-display text-[26px] font-extrabold tracking-tight text-navy lg:text-[30px]">
+                            Productos especializados
+                        </h2>
+                        <p className="max-w-[480px] text-[15px] leading-relaxed text-navy-500">
+                            Solventes biodegradables para trampas de grasa, drenajes y orinales.
+                        </p>
+                    </div>
+                    <Link
+                        href={route('productos.index')}
+                        className="whitespace-nowrap font-display text-[13.5px] font-semibold text-green-dark hover:text-green"
+                    >
+                        Ver catálogo completo →
+                    </Link>
+                </div>
+
+                <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+                    {productos.map((p) => (
+                        <Link
+                            key={p.id}
+                            href={route('productos.index')}
+                            className="group flex flex-col overflow-hidden rounded-xl border border-mist-300 bg-white transition-shadow hover:shadow-[0_12px_32px_-12px_rgba(15,23,42,0.25)]"
+                        >
+                            <div className="h-[170px] overflow-hidden">
                                 {p.imagen_url ? (
-                                    <img src={p.imagen_url} alt={p.nombre} className="h-[46px] w-[46px] shrink-0 rounded-lg object-cover" />
+                                    <img
+                                        src={p.imagen_url}
+                                        alt={p.nombre}
+                                        className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                                    />
                                 ) : (
-                                    <div className="grid h-[46px] w-[46px] shrink-0 place-items-center rounded-lg bg-green-light font-display text-[15px] font-extrabold text-green-dark">
+                                    <div className="grid h-full w-full place-items-center bg-green-light font-display text-4xl font-extrabold text-green-dark">
                                         {p.codigo}
                                     </div>
                                 )}
-                                <div>
-                                    <div className="font-display text-[14.5px] font-semibold text-navy">{p.nombre}</div>
-                                    <div className="text-[12.5px] text-navy-500">{p.aplicacion}</div>
-                                </div>
-                            </Link>
-                        ))}
-                    </div>
+                            </div>
+                            <div className="flex flex-1 flex-col gap-1 px-[18px] py-4">
+                                <div className="font-display text-[17px] font-bold text-navy group-hover:text-green-dark">{p.nombre}</div>
+                                <div className="text-[13px] text-navy-500">{p.aplicacion}</div>
+                                <div className="mt-2 text-[12px] font-medium text-ink-500">{p.presentacion}</div>
+                            </div>
+                        </Link>
+                    ))}
                 </div>
-                <div className="flex flex-col gap-4 rounded-xl border border-mist-300 bg-white p-7">
-                    <div className="font-sans text-[11px] font-semibold tracking-[0.14em] text-green-dark">CLIENTES</div>
-                    <div className="text-[19px] leading-relaxed text-navy text-pretty">
-                        &ldquo;Excelente el servicio y la calidad del trabajo de Always Clean. Son muy organizados y cumplidos.&rdquo;
+
+                <div className="mt-6 flex flex-col items-start gap-4 rounded-xl border border-green/30 bg-green-light px-6 py-5 sm:flex-row sm:items-center sm:justify-between">
+                    <div>
+                        <div className="font-display text-base font-bold text-navy">Bono de bienvenida 10%</div>
+                        <div className="text-[13px] text-navy-600">Oferta limitada · crédito fácil a 3 cuotas</div>
                     </div>
-                    <div className="flex items-center gap-3">
-                        <div className="h-[38px] w-[38px] rounded-full bg-[repeating-linear-gradient(135deg,#DFE2EE_0_6px,#EDEFF6_6px_12px)]" />
-                        <div>
-                            <div className="font-display text-[13.5px] font-semibold text-navy">Catalina Santo Domingo</div>
-                            <div className="text-xs text-navy-500">Gerente hotelera</div>
-                        </div>
-                    </div>
-                    <div className="flex items-center justify-between border-t border-mist-200 pt-4">
-                        <div>
-                            <div className="font-display text-base font-bold text-navy">Bono de bienvenida 10%</div>
-                            <div className="text-[12.5px] text-navy-500">Oferta limitada · crédito fácil a 3 cuotas</div>
-                        </div>
-                        <a
-                            href={waLink(empresa.whatsapp, 'Hola, quiero reclamar el bono de bienvenida del 10%.')}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="rounded-lg bg-green px-4 py-2.5 font-display text-[13px] font-semibold text-white"
-                        >
-                            Reclamar
-                        </a>
-                    </div>
+                    <a
+                        href={waLink(empresa.whatsapp, 'Hola, quiero reclamar el bono de bienvenida del 10%.')}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="whitespace-nowrap rounded-lg bg-green px-5 py-2.5 font-display text-[13px] font-semibold text-white"
+                    >
+                        Reclamar bono
+                    </a>
                 </div>
             </div>
 
