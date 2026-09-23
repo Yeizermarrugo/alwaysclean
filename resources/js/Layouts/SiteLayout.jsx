@@ -1,6 +1,7 @@
 import { Head } from '@inertiajs/react';
 import Header from '@/Components/Site/Header';
 import Footer from '@/Components/Site/Footer';
+import WhatsAppFloat from '@/Components/Site/WhatsAppFloat';
 
 export default function SiteLayout({ title, showTopbar = false, showActions = true, compact = false, children }) {
     return (
@@ -10,6 +11,7 @@ export default function SiteLayout({ title, showTopbar = false, showActions = tr
                 <Header showTopbar={showTopbar} showActions={showActions} compact={compact} />
                 <main className="flex-1">{children}</main>
                 <Footer />
+                <WhatsAppFloat />
             </div>
         </>
     );

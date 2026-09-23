@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { Link, usePage } from '@inertiajs/react';
-import { waLink } from '@/lib/whatsapp';
 
 const NAV = [
     { label: 'Inicio', route: 'home' },
@@ -48,22 +47,12 @@ export default function Header({ showTopbar = false, showActions = true, compact
 
                 <div className="flex items-center gap-2.5">
                     {showActions && (
-                        <>
-                            <Link
-                                href={route('contacto.create')}
-                                className="hidden rounded-lg border-[1.5px] border-mist-border px-3.5 py-2 font-display text-[13px] font-semibold text-navy sm:inline-block"
-                            >
-                                Cotizar
-                            </Link>
-                            <a
-                                href={waLink(empresa.whatsapp, 'Hola, quiero información sobre sus servicios de limpieza.')}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="rounded-lg bg-green px-3.5 py-2 font-display text-[13px] font-semibold text-white"
-                            >
-                                WhatsApp
-                            </a>
-                        </>
+                        <Link
+                            href={route('contacto.create')}
+                            className="hidden rounded-lg bg-green px-3.5 py-2 font-display text-[13px] font-semibold text-white sm:inline-block"
+                        >
+                            Cotizar
+                        </Link>
                     )}
                     <button
                         type="button"
