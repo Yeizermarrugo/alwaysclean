@@ -4,8 +4,8 @@ namespace App\Http\Controllers\Interno;
 
 use App\Http\Controllers\Controller;
 use App\Models\Producto;
+use App\Support\Uploads;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -25,7 +25,7 @@ class ProductoController extends Controller
         $data['slug'] = $this->slugUnico($data['nombre']);
 
         if ($request->hasFile('imagen')) {
-            $data['imagen'] = $request->file('imagen')->store('productos', 'public');
+            $data['imagen'] = $request->file('imagen')->store('productos', Uploads::diskName());
         }
 
         Producto::create($data);
@@ -39,11 +39,11 @@ class ProductoController extends Controller
 
         if ($request->hasFile('imagen')) {
             if ($producto->imagen) {
-                Storage::disk('public')->delete($producto->imagen);
+                Uploads::delete($producto->imagen);
             }
-            $data['imagen'] = $request->file('imagen')->store('productos', 'public');
+            $data['imagen'] = $request->file('imagen')->store('productos', Uploads::diskName());
         } elseif ($request->boolean('quitar_imagen') && $producto->imagen) {
-            Storage::disk('public')->delete($producto->imagen);
+            Uploads::delete($producto->imagen);
             $data['imagen'] = null;
         }
 
@@ -55,7 +55,7 @@ class ProductoController extends Controller
     public function destroy(Producto $producto)
     {
         if ($producto->imagen) {
-            Storage::disk('public')->delete($producto->imagen);
+            Uploads::delete($producto->imagen);
         }
 
         $producto->delete();

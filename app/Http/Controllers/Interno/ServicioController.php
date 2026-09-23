@@ -5,8 +5,8 @@ namespace App\Http\Controllers\Interno;
 use App\Http\Controllers\Controller;
 use App\Models\Servicio;
 use App\Models\ServicioImagen;
+use App\Support\Uploads;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -27,7 +27,7 @@ class ServicioController extends Controller
         $data['slug'] = $this->slugUnico($data['nombre']);
 
         if ($request->hasFile('imagen')) {
-            $data['imagen'] = $request->file('imagen')->store('servicios', 'public');
+            $data['imagen'] = $request->file('imagen')->store('servicios', Uploads::diskName());
         }
 
         $servicio = Servicio::create($data);
@@ -43,11 +43,11 @@ class ServicioController extends Controller
 
         if ($request->hasFile('imagen')) {
             if ($servicio->imagen) {
-                Storage::disk('public')->delete($servicio->imagen);
+                Uploads::delete($servicio->imagen);
             }
-            $data['imagen'] = $request->file('imagen')->store('servicios', 'public');
+            $data['imagen'] = $request->file('imagen')->store('servicios', Uploads::diskName());
         } elseif ($request->boolean('quitar_imagen') && $servicio->imagen) {
-            Storage::disk('public')->delete($servicio->imagen);
+            Uploads::delete($servicio->imagen);
             $data['imagen'] = null;
         }
 
@@ -68,10 +68,10 @@ class ServicioController extends Controller
     public function destroy(Servicio $servicio)
     {
         if ($servicio->imagen) {
-            Storage::disk('public')->delete($servicio->imagen);
+            Uploads::delete($servicio->imagen);
         }
         foreach ($servicio->imagenes as $imagen) {
-            Storage::disk('public')->delete($imagen->imagen);
+            Uploads::delete($imagen->imagen);
         }
 
         $servicio->delete();
@@ -83,7 +83,7 @@ class ServicioController extends Controller
     {
         abort_unless($imagen->servicio_id === $servicio->id, 404);
 
-        Storage::disk('public')->delete($imagen->imagen);
+        Uploads::delete($imagen->imagen);
         $imagen->delete();
 
         return back();
@@ -99,7 +99,7 @@ class ServicioController extends Controller
 
         foreach ($request->file('imagenes') as $archivo) {
             $servicio->imagenes()->create([
-                'imagen' => $archivo->store('servicios/galeria', 'public'),
+                'imagen' => $archivo->store('servicios/galeria', Uploads::diskName()),
                 'orden' => $orden++,
             ]);
         }
