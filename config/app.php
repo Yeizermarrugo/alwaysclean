@@ -118,6 +118,18 @@ return [
     |
     */
 
+    /*
+    |--------------------------------------------------------------------------
+    | IP real desde Cloudflare
+    |--------------------------------------------------------------------------
+    |
+    | Usar CF-Connecting-IP como IP del visitante en los límites de envío.
+    | Ver App\Support\IpVisitante antes de activarlo.
+    |
+    */
+
+    'ip_desde_cloudflare' => (bool) env('IP_DESDE_CLOUDFLARE', false),
+
     'maintenance' => [
         'driver' => env('APP_MAINTENANCE_DRIVER', 'file'),
         'store' => env('APP_MAINTENANCE_STORE', 'database'),

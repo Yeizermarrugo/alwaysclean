@@ -11,6 +11,7 @@ use App\Http\Controllers\PoliticasController;
 use App\Http\Controllers\PqrsController;
 use App\Http\Controllers\ProductoController;
 use App\Http\Controllers\ServicioController;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [ServicioController::class, 'home'])->name('home');
@@ -27,7 +28,7 @@ Route::get('/contacto', [ContactoController::class, 'create'])->name('contacto.c
 Route::post('/contacto', [ContactoController::class, 'store'])->name('contacto.store');
 
 Route::get('/pqrs', [PqrsController::class, 'create'])->name('pqrs.create');
-Route::post('/pqrs', [PqrsController::class, 'store'])->name('pqrs.store');
+Route::post('/pqrs', [PqrsController::class, 'store'])->middleware('throttle:pqrs')->name('pqrs.store');
 
 Route::middleware('guest')->group(function () {
     Route::get('/interno/login', [SessionController::class, 'create'])->name('login');
@@ -53,4 +54,15 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/interno/pqrs', [InternoPqrsController::class, 'index'])->name('interno.pqrs.index');
     Route::patch('/interno/pqrs/{pqrsCaso}', [InternoPqrsController::class, 'update'])->name('interno.pqrs.update');
+
+    // Para verificar tras desplegar que Laravel ve la IP real del visitante y no la del proxy.
+    Route::get('/interno/diagnostico-ip', fn (Request $request) => response()->json([
+        'ip_para_limites' => \App\Support\IpVisitante::de($request),
+        'ip_desde_cloudflare_activo' => config('app.ip_desde_cloudflare'),
+        'request_ip' => $request->ip(),
+        'cadena' => $request->ips(),
+        'remote_addr' => $request->server('REMOTE_ADDR'),
+        'x_forwarded_for' => $request->header('X-Forwarded-For'),
+        'cf_connecting_ip' => $request->header('CF-Connecting-IP'),
+    ]))->name('interno.diagnostico-ip');
 });
