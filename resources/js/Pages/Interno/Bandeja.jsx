@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Link, router } from '@inertiajs/react';
 import InternoLayout from '@/Layouts/InternoLayout';
-import PlaceholderPhoto from '@/Components/Site/PlaceholderPhoto';
+import UbicacionCard from '@/Components/Interno/UbicacionCard';
 
 const CANALES = [
     [null, 'Todas'],
@@ -20,7 +20,7 @@ const ESTADO_TONE = {
     cerrada_perdida: 'bg-red-50 text-alert',
 };
 
-export default function Bandeja({ inbox, stats, canalActivo, estados, seleccionada }) {
+export default function Bandeja({ inbox, stats, canalActivo, estados, seleccionada, mapsKey }) {
     const [estado, setEstado] = useState(seleccionada?.estado ?? 'nueva');
     const [cuadrilla, setCuadrilla] = useState(seleccionada?.cuadrilla ?? '');
     const [motivoPerdida, setMotivoPerdida] = useState(seleccionada?.motivo_perdida ?? '');
@@ -99,7 +99,14 @@ export default function Bandeja({ inbox, stats, canalActivo, estados, selecciona
                                 <span className="font-mono text-[11.5px] font-medium text-green-dark">{r.caso}</span>
                                 <span className="font-display text-[13.5px] font-semibold text-navy">{r.cliente}</span>
                                 <span>{r.servicio}</span>
-                                <span className="text-ink-500">{r.sede}</span>
+                                <span className="flex items-center gap-1.5 text-ink-500">
+                                    {r.ubicada && (
+                                        <svg viewBox="0 0 20 20" fill="currentColor" className="h-3.5 w-3.5 shrink-0 text-green" aria-label="Ubicación exacta">
+                                            <path fillRule="evenodd" d="M10 1.5a6.5 6.5 0 0 0-6.5 6.5c0 4.6 5.3 9.6 5.9 10.1a.9.9 0 0 0 1.2 0c.6-.5 5.9-5.5 5.9-10.1A6.5 6.5 0 0 0 10 1.5Zm0 9a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5Z" clipRule="evenodd" />
+                                        </svg>
+                                    )}
+                                    {r.sede}
+                                </span>
                                 <span className="text-ink-500">{r.canal}</span>
                                 <span>
                                     <span className={`rounded-full px-2.5 py-1 font-sans text-[11px] font-semibold ${ESTADO_TONE[r.estado] ?? 'bg-mist-100 text-navy'}`}>
@@ -141,6 +148,8 @@ export default function Bandeja({ inbox, stats, canalActivo, estados, selecciona
                                     {seleccionada.detalle}
                                 </div>
                             )}
+
+                            <UbicacionCard key={seleccionada.id} cotizacion={seleccionada} mapsKey={mapsKey} />
 
                             <div className="rounded-[10px] border border-mist-300 bg-white p-3.5">
                                 <div className="mb-2 font-sans text-[10.5px] font-semibold tracking-[0.1em] text-ink-500">GESTIONAR CASO</div>
@@ -224,7 +233,6 @@ export default function Bandeja({ inbox, stats, canalActivo, estados, selecciona
                     ) : (
                         <p className="text-navy-500">Seleccione un caso de la lista.</p>
                     )}
-                    <PlaceholderPhoto hint="mapa: zona de cobertura" className="mt-1 h-[120px] rounded-[10px] p-2.5" />
                 </div>
             </div>
         </InternoLayout>

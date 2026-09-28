@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useForm, usePage } from '@inertiajs/react';
 import SiteLayout from '@/Layouts/SiteLayout';
 import PlaceholderPhoto from '@/Components/Site/PlaceholderPhoto';
+import UbicacionPicker from '@/Components/Site/UbicacionPicker';
 
 const PASOS = ['SERVICIO', 'SU SEDE', 'CONTACTO'];
 const FRECUENCIAS = [
@@ -11,7 +12,9 @@ const FRECUENCIAS = [
     ['anual', 'Contrato anual'],
 ];
 
-export default function Contacto({ servicios }) {
+const CAMPOS_SEDE = ['empresa', 'nit', 'ciudad', 'direccion', 'referencia', 'latitud', 'longitud', 'area_m2', 'fecha_deseada', 'detalle', 'frecuencia'];
+
+export default function Contacto({ servicios, maps }) {
     const { empresa } = usePage().props;
     const [paso, setPaso] = useState(0);
 
@@ -21,6 +24,10 @@ export default function Contacto({ servicios }) {
         nit: '',
         ciudad: 'Cartagena de Indias',
         direccion: '',
+        referencia: '',
+        latitud: '',
+        longitud: '',
+        place_id: '',
         area_m2: '',
         fecha_deseada: '',
         detalle: '',
@@ -38,11 +45,19 @@ export default function Contacto({ servicios }) {
         setData('servicios', data.servicios.filter((s) => s !== nombre));
     };
 
-    const puedeContinuar = paso === 0 ? data.servicios.length > 0 : true;
+    const puedeContinuar = paso === 0
+        ? data.servicios.length > 0
+        : paso === 1 ? Boolean(data.empresa.trim() && data.ciudad.trim() && data.direccion.trim()) : true;
 
     const submit = (e) => {
         e.preventDefault();
-        post(route('contacto.store'));
+        post(route('contacto.store'), {
+            // Si el error es de un paso anterior, volver a ese paso para que se vea.
+            onError: (errs) => {
+                if (errs.servicios) setPaso(0);
+                else if (CAMPOS_SEDE.some((c) => errs[c])) setPaso(1);
+            },
+        });
     };
 
     return (
@@ -110,11 +125,33 @@ export default function Contacto({ servicios }) {
                                 <Field label="NIT">
                                     <input value={data.nit} onChange={(e) => setData('nit', e.target.value)} placeholder="900.000.000-0" className={inputClass} />
                                 </Field>
+                                <div className="sm:col-span-2">
+                                    <div className="mb-1.5 flex items-baseline justify-between gap-3">
+                                        <span className="text-xs font-medium text-navy-500">Dirección de la sede</span>
+                                        <span className="text-[11.5px] text-ink-500">Así la cuadrilla llega sin llamadas de por medio.</span>
+                                    </div>
+                                    <UbicacionPicker
+                                        mapsKey={maps?.key}
+                                        mapId={maps?.mapId}
+                                        direccion={data.direccion}
+                                        latitud={data.latitud}
+                                        longitud={data.longitud}
+                                        onChange={(cambios) => setData((d) => ({ ...d, ...cambios }))}
+                                        onCiudad={(ciudad) => setData((d) => ({ ...d, ciudad }))}
+                                        error={errors.direccion ?? errors.latitud ?? errors.longitud}
+                                        inputClass={inputClass}
+                                    />
+                                </div>
                                 <Field label="Ciudad" error={errors.ciudad}>
                                     <input value={data.ciudad} onChange={(e) => setData('ciudad', e.target.value)} className={inputClass} />
                                 </Field>
-                                <Field label="Dirección de la sede">
-                                    <input value={data.direccion} onChange={(e) => setData('direccion', e.target.value)} placeholder="Cra. 1 # 2-87, Bocagrande" className={inputClass} />
+                                <Field label="Punto de referencia (opcional)" error={errors.referencia}>
+                                    <input
+                                        value={data.referencia}
+                                        onChange={(e) => setData('referencia', e.target.value)}
+                                        placeholder="Ej. Torre B, frente al C.C. Bocagrande"
+                                        className={inputClass}
+                                    />
                                 </Field>
                                 <Field label="Área aproximada (m²)">
                                     <input type="number" value={data.area_m2} onChange={(e) => setData('area_m2', e.target.value)} placeholder="Ej. 3.500" className={inputClass} />
