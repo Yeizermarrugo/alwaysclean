@@ -38,6 +38,7 @@ class HandleInertiaRequests extends Middleware
             ],
             'flash' => [
                 'caso' => fn () => $request->session()->get('caso'),
+                'status' => fn () => $request->session()->get('status'),
             ],
             'pqrsPendientes' => fn () => $request->user() ? PqrsCaso::whereNull('leido_at')->count() : 0,
         ];

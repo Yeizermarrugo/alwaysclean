@@ -90,6 +90,13 @@ Laravel + Inertia (React/JSX) + Tailwind. Sitio público (home, servicios, produ
 - Medición: `resources/js/lib/analitica.js` (`medir()`), Plausible o GA4 según `ANALITICA_PLAUSIBLE_DOMINIO` / `ANALITICA_GA4_ID`; no se carga en `/interno`. Eventos: todo clic a `wa.me` ("Clic WhatsApp", o `data-evento`), "Cotización enviada", "PQRS radicado", "Pedido de productos".
 - `/contacto`: el recuadro de relleno del mapa se reemplazó por un mapa embebido de la ciudad.
 
+### Correo con Resend (2026-09-28)
+- `resend/resend-php` instalado; `MAIL_MAILER=resend` + `RESEND_KEY` en producción (local: `log`, los correos quedan en `storage/logs`). Todos los correos van en cola.
+- **Aviso de cotización nueva** (`App\Mail\CotizacionRecibida`) a `config('notificaciones.cotizaciones')` = `NOTIFICAR_COTIZACIONES` (coma). Destinatarios en `config/notificaciones.php`, NO en `company.php` (ese se comparte entero con el frontend). Texto del cliente en correos Markdown siempre por `App\Support\Markdown::texto()`.
+- **¿Olvidó su contraseña?**: `/interno/olvide` → correo `RestablecerContrasena` (User::sendPasswordResetNotification) → `/interno/restablecer/{token}`. Misma respuesta exista o no la cuenta. `throttle:olvide` 5/15 min por IP.
+- **Mi cuenta** (`/interno/cuenta`, clic en el nombre en la barra): cambio de contraseña con la actual; cierra otras sesiones (`auth.session` + `logoutOtherDevices`) y envía `ContrasenaCambiada`. Reglas: `Password::defaults()` (10+, letras y números; `uncompromised()` solo en producción).
+- Plantilla de correo publicada solo en lo necesario: `resources/views/vendor/mail/html/{header,message}.blade.php` + `themes/default.css` (logo y colores). Textos de la plantilla de Laravel traducidos en `lang/es.json`.
+
 ### Checklist al desplegar (Laravel Cloud)
 1. Variables: `APP_ENV=production`, `APP_DEBUG=false`, `TURNSTILE_SITE_KEY`/`TURNSTILE_SECRET_KEY` reales (las reales están comentadas en `.env` local; las `1x000…` son de prueba), `IP_DESDE_CLOUDFLARE=false` al inicio. `MAIL_FROM_ADDRESS` = buzón real que alguien lea (el correo pide "responda a este correo").
 2. Turnstile: agregar el dominio de producción (y el `*.laravel.cloud` si se prueba ahí) en los hostnames del widget "Always Clean - PQRS" (el mismo widget se usa en `/contacto`).
@@ -99,8 +106,9 @@ Laravel + Inertia (React/JSX) + Tailwind. Sitio público (home, servicios, produ
 6. `SESSION_SECURE_COOKIE` queda en `true` solo con `APP_ENV=production` (config/session.php); no hace falta definirla.
 7. Pendientes legales: la casilla de datos enlaza a `/politicas` (política integral PO-SGI-001), no a una política de tratamiento de datos Ley 1581 — falta que la empresa la tenga.
 8. `APP_URL` = dominio real (https): lo usan canonical, Open Graph y sitemap.
-9. Medición: definir `ANALITICA_PLAUSIBLE_DOMINIO` o `ANALITICA_GA4_ID` (uno solo).
-10. Google Maps (cotizaciones): crear clave de navegador con Maps JavaScript API + Places API (New) + Maps Embed API, restringida por *HTTP referrer* al dominio de producción → `GOOGLE_MAPS_BROWSER_KEY`. Opcional `GOOGLE_MAPS_MAP_ID` (sin él usa `DEMO_MAP_ID`). Sin clave, el formulario pide la dirección en texto y el panel usa el embed público de Maps.
+9. Correo: verificar el dominio en Resend (registros SPF/DKIM que da Resend en el DNS), `MAIL_MAILER=resend`, `RESEND_KEY`, `MAIL_FROM_ADDRESS` en ese dominio, `NOTIFICAR_COTIZACIONES`. Probar "¿Olvidó su contraseña?" con una cuenta real.
+10. Medición: definir `ANALITICA_PLAUSIBLE_DOMINIO` o `ANALITICA_GA4_ID` (uno solo).
+11. Google Maps (cotizaciones): crear clave de navegador con Maps JavaScript API + Places API (New) + Maps Embed API, restringida por *HTTP referrer* al dominio de producción → `GOOGLE_MAPS_BROWSER_KEY`. Opcional `GOOGLE_MAPS_MAP_ID` (sin él usa `DEMO_MAP_ID`). Sin clave, el formulario pide la dirección en texto y el panel usa el embed público de Maps.
 
 ### Dev
 - Verificar UI con captura: Chromium headless de Playwright en `~/.cache/ms-playwright/chromium_headless_shell-*/*/chrome-headless-shell` (`--no-sandbox --screenshot=… URL`).

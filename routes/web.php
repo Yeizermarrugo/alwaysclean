@@ -1,7 +1,9 @@
 <?php
 
+use App\Http\Controllers\Auth\ContrasenaController;
 use App\Http\Controllers\Auth\SessionController;
 use App\Http\Controllers\ContactoController;
+use App\Http\Controllers\Interno\CuentaController;
 use App\Http\Controllers\Interno\ProductoController as InternoProductoController;
 use App\Http\Controllers\Interno\PqrsController as InternoPqrsController;
 use App\Http\Controllers\Interno\ServicioController as InternoServicioController;
@@ -37,10 +39,18 @@ Route::post('/pqrs', [PqrsController::class, 'store'])->middleware('throttle:pqr
 Route::middleware('guest')->group(function () {
     Route::get('/interno/login', [SessionController::class, 'create'])->name('login');
     Route::post('/interno/login', [SessionController::class, 'store'])->middleware('throttle:login')->name('interno.login.store');
+
+    Route::get('/interno/olvide', [ContrasenaController::class, 'solicitar'])->name('interno.password.request');
+    Route::post('/interno/olvide', [ContrasenaController::class, 'enviarEnlace'])->middleware('throttle:olvide')->name('interno.password.email');
+    Route::get('/interno/restablecer/{token}', [ContrasenaController::class, 'formulario'])->name('interno.password.reset');
+    Route::post('/interno/restablecer', [ContrasenaController::class, 'restablecer'])->middleware('throttle:olvide')->name('interno.password.update');
 });
 
-Route::middleware('auth')->group(function () {
+// auth.session: si la contraseña cambia, las otras sesiones de esa cuenta se cierran.
+Route::middleware(['auth', 'auth.session'])->group(function () {
     Route::post('/interno/logout', [SessionController::class, 'destroy'])->name('interno.logout');
+    Route::get('/interno/cuenta', [CuentaController::class, 'show'])->name('interno.cuenta');
+    Route::put('/interno/cuenta/contrasena', [CuentaController::class, 'actualizarContrasena'])->name('interno.cuenta.contrasena');
     Route::get('/interno/cotizaciones', [InternoController::class, 'bandeja'])->name('interno.bandeja');
     Route::post('/interno/cotizaciones', [InternoController::class, 'crear'])->name('interno.cotizaciones.store');
     Route::patch('/interno/cotizaciones/{cotizacion}', [InternoController::class, 'actualizar'])->name('interno.actualizar');

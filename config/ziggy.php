@@ -17,6 +17,7 @@ return [
             'pqrs.*',
             'login',
             'interno.login.store',
+            'interno.password.*',
         ],
     ],
 ];

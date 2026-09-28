@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\CotizacionRecibida;
 use App\Models\Cotizacion;
 use App\Models\Servicio;
 use App\Rules\Turnstile;
@@ -10,6 +11,7 @@ use Illuminate\Contracts\Encryption\DecryptException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Crypt;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
@@ -110,6 +112,11 @@ class ContactoController extends Controller
         Cache::put($claveDuplicado, $cotizacion->caso, now()->addDay());
         RateLimiter::hit($claveIp, 3600);
         RateLimiter::hit($claveTelefono, 86400);
+
+        // Aviso al equipo (en cola: si el correo falla, el cliente igual sigue a WhatsApp).
+        if ($destinatarios = config('notificaciones.cotizaciones')) {
+            Mail::to($destinatarios)->queue(new CotizacionRecibida($cotizacion));
+        }
 
         return $this->irAWhatsApp($cotizacion);
     }

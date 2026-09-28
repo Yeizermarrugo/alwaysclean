@@ -45,9 +45,13 @@ export default function InternoLayout({ title, pantallaCompleta = false, childre
                     ))}
                 </nav>
                 <div className="flex items-center gap-2.5">
-                    <span className="rounded-full bg-white/[.14] px-3 py-1.5 font-display text-xs font-semibold text-white">
+                    <Link
+                        href={route('interno.cuenta')}
+                        title="Mi cuenta"
+                        className={`rounded-full px-3 py-1.5 font-display text-xs font-semibold text-white hover:bg-white/25 ${currentRoute === 'interno.cuenta' ? 'bg-white/25' : 'bg-white/[.14]'}`}
+                    >
                         {auth.user?.name}
-                    </span>
+                    </Link>
                     <button onClick={logout} className="font-display text-xs font-semibold text-white/70 hover:text-white">
                         Salir
                     </button>
