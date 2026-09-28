@@ -95,6 +95,7 @@ Laravel + Inertia (React/JSX) + Tailwind. Sitio público (home, servicios, produ
 - **Aviso de cotización nueva** (`App\Mail\CotizacionRecibida`) a `config('notificaciones.cotizaciones')` = `NOTIFICAR_COTIZACIONES` (coma). Destinatarios en `config/notificaciones.php`, NO en `company.php` (ese se comparte entero con el frontend). Texto del cliente en correos Markdown siempre por `App\Support\Markdown::texto()`.
 - **¿Olvidó su contraseña?**: `/interno/olvide` → correo `RestablecerContrasena` (User::sendPasswordResetNotification) → `/interno/restablecer/{token}`. Misma respuesta exista o no la cuenta. `throttle:olvide` 5/15 min por IP.
 - **Mi cuenta** (`/interno/cuenta`, clic en el nombre en la barra): cambio de contraseña con la actual; cierra otras sesiones (`auth.session` + `logoutOtherDevices`) y envía `ContrasenaCambiada`. Reglas: `Password::defaults()` (10+, letras y números; `uncompromised()` solo en producción).
+- Hosting compartido sin worker ni cron frecuente: `QUEUE_CONNECTION=deferred` (config/queue.php) envía los correos justo después de responder, sin reintentos. Con worker (Laravel Cloud) o cron cada minuto: `database`.
 - Plantilla de correo publicada solo en lo necesario: `resources/views/vendor/mail/html/{header,message}.blade.php` + `themes/default.css` (logo y colores). Textos de la plantilla de Laravel traducidos en `lang/es.json`.
 
 ### Checklist al desplegar (Laravel Cloud)
