@@ -35,6 +35,7 @@ class InternoController extends Controller
             : Cotizacion::with('eventos')->find($listado->first()?->id);
 
         $seleccionada = $seleccionadaModelo ? array_merge($seleccionadaModelo->toArray(), [
+            'canal_label' => Cotizacion::CANALES[$seleccionadaModelo->canal] ?? $seleccionadaModelo->canal,
             'maps_url' => $seleccionadaModelo->mapsUrl(),
             'eventos' => $seleccionadaModelo->eventos->map(fn (CotizacionEvento $ev) => [
                 'id' => $ev->id,
@@ -54,7 +55,7 @@ class InternoController extends Controller
                 'servicio' => $c->servicios[0] ?? '',
                 'sede' => $c->ciudad,
                 'ubicada' => $c->tieneCoordenadas(),
-                'canal' => ucfirst($c->canal),
+                'canal' => Cotizacion::CANALES[$c->canal] ?? $c->canal,
                 'estado' => $c->estado,
                 'estadoLabel' => Cotizacion::ESTADOS[$c->estado] ?? $c->estado,
                 'recibida' => $c->created_at->diffForHumans(['short' => true]),

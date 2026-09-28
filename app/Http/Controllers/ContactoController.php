@@ -30,7 +30,7 @@ class ContactoController extends Controller
     public function create(): Response
     {
         return Inertia::render('Contacto', [
-            'servicios' => Servicio::orderBy('orden')->get(['id', 'nombre', 'categoria']),
+            'servicios' => Servicio::activos()->orderBy('orden')->get(['id', 'nombre', 'categoria']),
             'maps' => [
                 'key' => config('services.google_maps.browser_key'),
                 'mapId' => config('services.google_maps.map_id'),
@@ -54,7 +54,8 @@ class ContactoController extends Controller
 
         $data = $request->validate([
             'servicios' => ['required', 'array', 'min:1', 'max:10'],
-            'servicios.*' => ['string', 'distinct', Rule::in(Servicio::pluck('nombre')->all())],
+            // Solo servicios visibles: uno oculto desde el panel ya no se puede cotizar.
+            'servicios.*' => ['string', 'distinct', Rule::in(Servicio::activos()->pluck('nombre')->all())],
             'empresa' => ['required', 'string', 'max:150'],
             'nit' => ['nullable', 'string', 'max:30'],
             'ciudad' => ['required', 'string', 'max:100'],

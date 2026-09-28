@@ -103,4 +103,20 @@ class CotizacionProteccionTest extends TestCase
             ->assertSessionHasErrors('cf-turnstile-response');
         $this->assertSame(0, Cotizacion::count());
     }
+
+    public function test_no_acepta_servicios_ocultos(): void
+    {
+        \App\Models\Servicio::where('nombre', 'Lavado de tanques')->update(['activo' => false]);
+
+        $this->post('/contacto', $this->datos())->assertSessionHasErrors('servicios.0');
+        $this->assertSame(0, Cotizacion::count());
+
+        $this->get('/contacto')->assertInertia(fn ($page) => $page->has('servicios', 0));
+    }
+
+    public function test_mensajes_de_validacion_en_espanol(): void
+    {
+        $this->post('/contacto', $this->datos(['empresa' => '']))
+            ->assertSessionHasErrors(['empresa' => 'El campo empresa es obligatorio.']);
+    }
 }

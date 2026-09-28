@@ -226,7 +226,7 @@ export default function Bandeja({ inbox, stats, canalActivo, rango, totalCotizac
                                 <Row label="Servicio" value={seleccionada.servicios.join(', ')} />
                                 {seleccionada.area_m2 && <Row label="Área" value={`${seleccionada.area_m2} m²`} />}
                                 <Row label="Frecuencia" value={ucfirst(seleccionada.frecuencia.replace('_', ' '))} />
-                                <Row label="Canal" value={`${ucfirst(seleccionada.canal)} · ${seleccionada.whatsapp}`} />
+                                <Row label="Canal" value={`${seleccionada.canal_label} · ${seleccionada.whatsapp}`} />
                             </div>
                             {seleccionada.detalle && (
                                 <div className="rounded-[10px] border border-mist-300 bg-white p-3.5 text-[13px] leading-relaxed text-navy-600">
