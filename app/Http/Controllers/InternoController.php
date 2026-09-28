@@ -24,6 +24,7 @@ class InternoController extends Controller
             : Cotizacion::with('eventos')->find($listado->first()?->id);
 
         $seleccionada = $seleccionadaModelo ? array_merge($seleccionadaModelo->toArray(), [
+            'maps_url' => $seleccionadaModelo->mapsUrl(),
             'eventos' => $seleccionadaModelo->eventos->map(fn (CotizacionEvento $ev) => [
                 'id' => $ev->id,
                 'usuario' => $ev->usuario,
@@ -41,6 +42,7 @@ class InternoController extends Controller
                 'cliente' => $c->empresa,
                 'servicio' => $c->servicios[0] ?? '',
                 'sede' => $c->ciudad,
+                'ubicada' => $c->tieneCoordenadas(),
                 'canal' => ucfirst($c->canal),
                 'estado' => $c->estado,
                 'estadoLabel' => Cotizacion::ESTADOS[$c->estado] ?? $c->estado,
@@ -55,6 +57,7 @@ class InternoController extends Controller
             'canalActivo' => $canal,
             'estados' => Cotizacion::ESTADOS,
             'seleccionada' => $seleccionada,
+            'mapsKey' => config('services.google_maps.browser_key'),
         ]);
     }
 

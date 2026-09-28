@@ -33,6 +33,13 @@ return [
         'secret_key' => env('TURNSTILE_SECRET_KEY'),
     ],
 
+    // Clave de navegador (restringida por dominio en Google Cloud): Maps JavaScript API,
+    // Places API (New) y Maps Embed API. Sin clave, el formulario usa dirección en texto.
+    'google_maps' => [
+        'browser_key' => env('GOOGLE_MAPS_BROWSER_KEY'),
+        'map_id' => env('GOOGLE_MAPS_MAP_ID') ?: 'DEMO_MAP_ID',
+    ],
+
     'slack' => [
         'notifications' => [
             'bot_user_oauth_token' => env('SLACK_BOT_USER_OAUTH_TOKEN'),

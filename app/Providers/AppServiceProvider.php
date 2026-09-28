@@ -32,5 +32,11 @@ class AppServiceProvider extends ServiceProvider
             ->response(fn () => back()->withErrors([
                 'form' => 'Demasiados intentos desde su conexión. Inténtelo de nuevo más tarde.',
             ])));
+
+        // Igual para POST /contacto; los límites por cotización creada viven en ContactoController.
+        RateLimiter::for('contacto', fn (Request $request) => Limit::perHour(20)->by(IpVisitante::de($request))
+            ->response(fn () => back()->withErrors([
+                'form' => 'Demasiados intentos desde su conexión. Inténtelo de nuevo más tarde.',
+            ])));
     }
 }

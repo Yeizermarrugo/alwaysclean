@@ -4,8 +4,20 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Escala global del sitio. vh/dvh también se escalan con zoom, así que para
+   ocupar exactamente la ventana hay que dividir por este mismo valor (ver .h-pantalla). */
+:root {
+    --zoom: 1.18;
+}
+
 html {
-    zoom: 1.18;
+    zoom: var(--zoom);
+}
+
+@layer utilities {
+    .h-pantalla {
+        height: calc(100dvh / var(--zoom));
+    }
 }
 
 body {

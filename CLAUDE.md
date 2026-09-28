@@ -54,6 +54,12 @@ Laravel + Inertia (React/JSX) + Tailwind. Sitio público (home, servicios, produ
 - Home: quitado el testimonio de cliente (no se usará); productos en grid de tarjetas; bono 10 % como franja.
 - `/nosotros` rediseñada. Contenido fiel al PDF de portafolio (pág. 03 tiene Valores institucionales + Creencias; se mantienen por decisión del usuario). No inventar títulos/textos: usar los del PDF (`C:\Users\yemav\Downloads\Portafolio Always Clean SAS.pdf`, es imagen — `pdftoppm` para leerlo).
 
+### Logo y login del panel
+- `public/images/logo.png` (163×90, fondo blanco opaco) es de baja resolución: se ve pixelado/diminuto. Lo siguen usando header y footer del sitio público.
+- Versiones nuevas en alta (sacadas del logo vectorial de la portada del PDF, render a 600 DPI + fondo a transparente con PHP GD): `logo-color.png` (fondos claros), `logo-blanco.png` (fondos oscuros), `logo-gota.png` (solo la gota, espacios chicos). Usar estas en UI nueva.
+- `/interno/login` (`Pages/Auth/Login.jsx`): pantalla dividida — foto + capa navy con logo blanco y módulos del panel (solo `lg`), formulario con logo a color, mostrar/ocultar contraseña, "Mantener la sesión iniciada" (`remember`).
+- `InternoLayout`: barra con gota en recuadro blanco + "ALWAYS CLEAN / Panel interno", enlaza a Cotizaciones. Títulos de pestaña "Panel interno · …".
+
 ### PQRS — cómo está protegido (`POST /pqrs`)
 - **Capa 1 (abuso):** `throttle:pqrs` (20 intentos/h por IP, en `AppServiceProvider`) + en `PqrsController@store`: 5 casos/h por IP y 3/día por email (solo cuentan casos creados); honeypot `sitio_web` (finge éxito, no guarda); token `inicio` cifrado con tiempo mínimo de 3 s; Turnstile (`App\Rules\Turnstile`, activo solo si hay `TURNSTILE_*`); `email:rfc,dns`; duplicado email+descripción en 24 h → devuelve el mismo caso (vía caché); casilla `acepta_datos` → `consentimiento_at`.
 - **Correo** (`PqrsCasoRecibido`): recibe solo número y tipo (strings, no el modelo). Nunca meter texto del usuario en la plantilla Markdown: `{{ }}` no escapa `[texto](url)` → phishing con nuestra marca.
@@ -63,13 +69,23 @@ Laravel + Inertia (React/JSX) + Tailwind. Sitio público (home, servicios, produ
 - **IP para límites:** `App\Support\IpVisitante::de($request)`, no `$request->ip()`. En Laravel Cloud, Laravel confía en todos los proxies (`TrustProxies` + `laravel_cloud()`), así que `$request->ip()` sale de la parte de `X-Forwarded-For` que escribe el visitante → falseable. **No usar `trustProxies(at: '*')`**: mismo problema (un test lo demostró). Con `IP_DESDE_CLOUDFLARE=true` se usa `CF-Connecting-IP`.
 - **Tests:** `tests/Feature/PqrsTest.php`, `ProxyIpTest.php` (20 en total). `phpunit.xml` fuerza sqlite en memoria y `DB_PQRS_USERNAME=""` — sin eso los tests escriben en la MySQL de desarrollo.
 
+### Cotizaciones (`POST /contacto`) — protección y ubicación (2026-09-28)
+- Mismo esquema que PQRS capa 1: `throttle:contacto` (20/h por IP), en `ContactoController@store` 5 creadas/h por IP y 3/día por WhatsApp, honeypot `sitio_web` (redirige a wa.me sin guardar), token `inicio` (mín. 5 s), Turnstile (`TurnstileWidget.jsx`, paso 3), duplicado WhatsApp+servicios en 24 h → misma cotización (caché).
+- `servicios.*` solo nombres de la tabla `servicios`; `whatsapp` solo celular 3xx o fijo 60x (`Cotizacion::normalizarTelefono`), se guarda como "300 123 4567".
+- Número de caso aleatorio `COT-XXXXXX` (`Cotizacion::registrar()` con reintento). Los viejos `COT-24xx` siguen válidos.
+- Ubicación: `direccion` obligatoria + `referencia`, `latitud`, `longitud`, `place_id`. Formulario: `UbicacionPicker.jsx` (Places API New + pin arrastrable, solo con `GOOGLE_MAPS_BROWSER_KEY`). Panel: `UbicacionCard.jsx` (mapa, cómo llegar, enviar a cuadrilla).
+- Tests: `CotizacionProteccionTest.php`, `CotizacionUbicacionTest.php` (datos compartidos en `tests/Feature/Concerns/DatosCotizacion.php`).
+
 ### Checklist al desplegar (Laravel Cloud)
 1. Variables: `APP_ENV=production`, `APP_DEBUG=false`, `TURNSTILE_SITE_KEY`/`TURNSTILE_SECRET_KEY` reales (las reales están comentadas en `.env` local; las `1x000…` son de prueba), `IP_DESDE_CLOUDFLARE=false` al inicio. `MAIL_FROM_ADDRESS` = buzón real que alguien lea (el correo pide "responda a este correo").
-2. Turnstile: agregar el dominio de producción (y el `*.laravel.cloud` si se prueba ahí) en los hostnames del widget "Always Clean - PQRS".
+2. Turnstile: agregar el dominio de producción (y el `*.laravel.cloud` si se prueba ahí) en los hostnames del widget "Always Clean - PQRS" (el mismo widget se usa en `/contacto`).
 3. Usuario solo-INSERT: correr `database/sql/pqrs_publico_usuario.sql` en la MySQL de Cloud (cambiar nombre de BD y contraseña) y poner `DB_PQRS_USERNAME`/`DB_PQRS_PASSWORD`. Confirmar antes que Cloud permita crear usuarios con permisos por tabla; si no, dejar vacías (funciona con la conexión normal).
 4. IP real: logueado, desde el celular con datos móviles, abrir `/interno/diagnostico-ip` y comparar con https://ifconfig.me. Si `cf_connecting_ip` coincide → `IP_DESDE_CLOUDFLARE=true` y verificar que `ip_para_limites` muestre esa IP. Si viene vacío → dejar `false` y revisar `request_ip`/`x_forwarded_for` antes de decidir.
 5. Dominio en Cloudflare: confirmar en la doc de Laravel Cloud si va con proxy (nube naranja) o "DNS only" (Cloud ya corre sobre la red de Cloudflare).
-6. Pendientes legales: la casilla de datos enlaza a `/politicas` (política integral PO-SGI-001), no a una política de tratamiento de datos Ley 1581 — falta que la empresa la tenga.
+6. Login del panel sigue **sin límite de intentos** (ver `TODO.md`); hacerlo antes de salir a producción, usando `IpVisitante`.
+7. Pendientes legales: la casilla de datos enlaza a `/politicas` (política integral PO-SGI-001), no a una política de tratamiento de datos Ley 1581 — falta que la empresa la tenga.
+8. Google Maps (cotizaciones): crear clave de navegador con Maps JavaScript API + Places API (New) + Maps Embed API, restringida por *HTTP referrer* al dominio de producción → `GOOGLE_MAPS_BROWSER_KEY`. Opcional `GOOGLE_MAPS_MAP_ID` (sin él usa `DEMO_MAP_ID`). Sin clave, el formulario pide la dirección en texto y el panel usa el embed público de Maps.
 
 ### Dev
+- Verificar UI con captura: Chromium headless de Playwright en `~/.cache/ms-playwright/chromium_headless_shell-*/*/chrome-headless-shell` (`--no-sandbox --screenshot=… URL`).
 - `public/hot` sigue desapareciendo con `npm run dev` vivo; síntoma: cambios en JSX no se ven. Recrear con `echo -n "http://127.0.0.1:5173" > public/hot`.
