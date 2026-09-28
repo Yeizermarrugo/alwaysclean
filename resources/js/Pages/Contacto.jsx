@@ -1,8 +1,9 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { useForm, usePage } from '@inertiajs/react';
 import SiteLayout from '@/Layouts/SiteLayout';
 import PlaceholderPhoto from '@/Components/Site/PlaceholderPhoto';
 import UbicacionPicker from '@/Components/Site/UbicacionPicker';
+import TurnstileWidget from '@/Components/Site/TurnstileWidget';
 
 const PASOS = ['SERVICIO', 'SU SEDE', 'CONTACTO'];
 const FRECUENCIAS = [
@@ -14,7 +15,7 @@ const FRECUENCIAS = [
 
 const CAMPOS_SEDE = ['empresa', 'nit', 'ciudad', 'direccion', 'referencia', 'latitud', 'longitud', 'area_m2', 'fecha_deseada', 'detalle', 'frecuencia'];
 
-export default function Contacto({ servicios, maps }) {
+export default function Contacto({ servicios, maps, inicio, turnstileSiteKey }) {
     const { empresa } = usePage().props;
     const [paso, setPaso] = useState(0);
 
@@ -33,7 +34,13 @@ export default function Contacto({ servicios, maps }) {
         detalle: '',
         frecuencia: 'una_vez',
         whatsapp: '',
+        sitio_web: '',
+        inicio,
+        'cf-turnstile-response': '',
     });
+    const turnstile = useRef(null);
+    const errorServicios = errors.servicios ?? Object.entries(errors).find(([k]) => k.startsWith('servicios.'))?.[1];
+    const errorWhatsapp = errors.whatsapp ?? errors.whatsapp_normalizado;
 
     const disponibles = servicios.filter((s) => !data.servicios.includes(s.nombre));
 
@@ -54,9 +61,11 @@ export default function Contacto({ servicios, maps }) {
         post(route('contacto.store'), {
             // Si el error es de un paso anterior, volver a ese paso para que se vea.
             onError: (errs) => {
-                if (errs.servicios) setPaso(0);
+                if (Object.keys(errs).some((k) => k.startsWith('servicios'))) setPaso(0);
                 else if (CAMPOS_SEDE.some((c) => errs[c])) setPaso(1);
             },
+            // El token de Turnstile es de un solo uso.
+            onFinish: () => turnstile.current?.reset(),
         });
     };
 
@@ -84,7 +93,28 @@ export default function Contacto({ servicios, maps }) {
                         ))}
                     </div>
 
+                    {errors.form && (
+                        <div className="mb-5 rounded-[10px] border border-alert/40 bg-alert/5 px-4 py-3.5 text-[14px] font-medium text-alert">
+                            {errors.form}
+                        </div>
+                    )}
+
                     <form onSubmit={submit}>
+                        {/* Honeypot: invisible para personas, los bots lo llenan. */}
+                        <div aria-hidden="true" className="absolute -left-[9999px] h-px w-px overflow-hidden">
+                            <label>
+                                Sitio web
+                                <input
+                                    type="text"
+                                    name="sitio_web"
+                                    tabIndex={-1}
+                                    autoComplete="off"
+                                    value={data.sitio_web}
+                                    onChange={(e) => setData('sitio_web', e.target.value)}
+                                />
+                            </label>
+                        </div>
+
                         {paso === 0 && (
                             <div>
                                 <div className="mb-1.5 text-xs font-medium text-navy-500">Servicios requeridos</div>
@@ -113,7 +143,7 @@ export default function Contacto({ servicios, maps }) {
                                         <option key={s.id} value={s.nombre}>{s.nombre}</option>
                                     ))}
                                 </select>
-                                {errors.servicios && <p className="mt-1.5 text-xs text-alert">{errors.servicios}</p>}
+                                {errorServicios && <p className="mt-1.5 text-xs text-alert">{errorServicios}</p>}
                             </div>
                         )}
 
@@ -153,10 +183,10 @@ export default function Contacto({ servicios, maps }) {
                                         className={inputClass}
                                     />
                                 </Field>
-                                <Field label="Área aproximada (m²)">
+                                <Field label="Área aproximada (m²)" error={errors.area_m2}>
                                     <input type="number" value={data.area_m2} onChange={(e) => setData('area_m2', e.target.value)} placeholder="Ej. 3.500" className={inputClass} />
                                 </Field>
-                                <Field label="Fecha deseada">
+                                <Field label="Fecha deseada" error={errors.fecha_deseada}>
                                     <input type="date" value={data.fecha_deseada} onChange={(e) => setData('fecha_deseada', e.target.value)} className={inputClass} />
                                 </Field>
                                 <div className="sm:col-span-2">
@@ -188,10 +218,26 @@ export default function Contacto({ servicios, maps }) {
                         )}
 
                         {paso === 2 && (
-                            <div className="max-w-sm">
-                                <Field label="Su WhatsApp" error={errors.whatsapp}>
-                                    <input value={data.whatsapp} onChange={(e) => setData('whatsapp', e.target.value)} placeholder="300 000 0000" className={inputClass} />
+                            <div className="flex max-w-sm flex-col gap-4">
+                                <Field label="Su WhatsApp" error={errorWhatsapp}>
+                                    <input
+                                        type="tel"
+                                        inputMode="tel"
+                                        autoComplete="tel-national"
+                                        value={data.whatsapp}
+                                        onChange={(e) => setData('whatsapp', e.target.value)}
+                                        placeholder="300 000 0000"
+                                        className={inputClass}
+                                    />
                                 </Field>
+                                {turnstileSiteKey && (
+                                    <div>
+                                        <TurnstileWidget ref={turnstile} siteKey={turnstileSiteKey} onToken={(t) => setData('cf-turnstile-response', t)} />
+                                        {errors['cf-turnstile-response'] && (
+                                            <p className="mt-1.5 text-xs text-alert">{errors['cf-turnstile-response']}</p>
+                                        )}
+                                    </div>
+                                )}
                             </div>
                         )}
 

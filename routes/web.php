@@ -25,7 +25,7 @@ Route::get('/nosotros', [NosotrosController::class, 'index'])->name('nosotros.in
 Route::get('/politicas', [PoliticasController::class, 'index'])->name('politicas.index');
 
 Route::get('/contacto', [ContactoController::class, 'create'])->name('contacto.create');
-Route::post('/contacto', [ContactoController::class, 'store'])->name('contacto.store');
+Route::post('/contacto', [ContactoController::class, 'store'])->middleware('throttle:contacto')->name('contacto.store');
 
 Route::get('/pqrs', [PqrsController::class, 'create'])->name('pqrs.create');
 Route::post('/pqrs', [PqrsController::class, 'store'])->middleware('throttle:pqrs')->name('pqrs.store');

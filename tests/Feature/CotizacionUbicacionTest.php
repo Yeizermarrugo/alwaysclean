@@ -5,24 +5,12 @@ namespace Tests\Feature;
 use App\Models\Cotizacion;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\Feature\Concerns\DatosCotizacion;
 use Tests\TestCase;
 
 class CotizacionUbicacionTest extends TestCase
 {
-    use RefreshDatabase;
-
-    private function datos(array $extra = []): array
-    {
-        return [
-            'servicios' => ['Lavado de tanques'],
-            'empresa' => 'Hotel Caribe S.A.S.',
-            'ciudad' => 'Cartagena de Indias',
-            'direccion' => 'Cra. 1 # 2-87, Bocagrande',
-            'frecuencia' => 'una_vez',
-            'whatsapp' => '3000000000',
-            ...$extra,
-        ];
-    }
+    use DatosCotizacion, RefreshDatabase;
 
     public function test_guarda_la_ubicacion_marcada_en_el_mapa(): void
     {
