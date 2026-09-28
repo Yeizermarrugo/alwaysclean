@@ -38,6 +38,7 @@ Route::middleware('guest')->group(function () {
 Route::middleware('auth')->group(function () {
     Route::post('/interno/logout', [SessionController::class, 'destroy'])->name('interno.logout');
     Route::get('/interno/cotizaciones', [InternoController::class, 'bandeja'])->name('interno.bandeja');
+    Route::post('/interno/cotizaciones', [InternoController::class, 'crear'])->name('interno.cotizaciones.store');
     Route::patch('/interno/cotizaciones/{cotizacion}', [InternoController::class, 'actualizar'])->name('interno.actualizar');
 
     Route::get('/interno/servicios', [InternoServicioController::class, 'index'])->name('interno.servicios.index');

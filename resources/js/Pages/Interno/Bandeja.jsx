@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link, router } from '@inertiajs/react';
 import InternoLayout from '@/Layouts/InternoLayout';
 import UbicacionCard from '@/Components/Interno/UbicacionCard';
+import NuevaCotizacionModal from '@/Components/Interno/NuevaCotizacionModal';
 
 const CANALES = [
     [null, 'Todas'],
@@ -20,12 +21,13 @@ const ESTADO_TONE = {
     cerrada_perdida: 'bg-red-50 text-alert',
 };
 
-export default function Bandeja({ inbox, stats, canalActivo, rango, totalCotizaciones, estados, seleccionada, mapsKey }) {
+export default function Bandeja({ inbox, stats, canalActivo, rango, totalCotizaciones, estados, seleccionada, mapsKey, mapId, serviciosCatalogo }) {
     const [estado, setEstado] = useState(seleccionada?.estado ?? 'nueva');
     const [cuadrilla, setCuadrilla] = useState(seleccionada?.cuadrilla ?? '');
     const [motivoPerdida, setMotivoPerdida] = useState(seleccionada?.motivo_perdida ?? '');
     const [nota, setNota] = useState('');
     const [busqueda, setBusqueda] = useState('');
+    const [creando, setCreando] = useState(false);
 
     const inboxFiltrado = inbox.filter((r) => {
         const q = busqueda.trim().toLowerCase();
@@ -90,12 +92,22 @@ export default function Bandeja({ inbox, stats, canalActivo, rango, totalCotizac
                                 </Link>
                             ))}
                         </div>
-                        <input
-                            value={busqueda}
-                            onChange={(e) => setBusqueda(e.target.value)}
-                            placeholder="Buscar cliente o servicio…"
-                            className="w-full rounded-lg border border-mist-400 px-3 py-2.5 text-[13px] text-navy placeholder:text-ink-400 focus:border-green focus:ring-green sm:w-56"
-                        />
+                        <div className="flex w-full items-center gap-2 sm:w-auto">
+                            <input
+                                value={busqueda}
+                                onChange={(e) => setBusqueda(e.target.value)}
+                                placeholder="Buscar cliente o servicio…"
+                                className="w-full rounded-lg border border-mist-400 px-3 py-2.5 text-[13px] text-navy placeholder:text-ink-400 focus:border-green focus:ring-green sm:w-56"
+                            />
+                            <button
+                                type="button"
+                                onClick={() => setCreando(true)}
+                                className="flex shrink-0 items-center gap-1.5 rounded-lg bg-green px-3.5 py-2.5 font-display text-[13px] font-semibold text-white hover:bg-green-dark"
+                            >
+                                <span aria-hidden="true" className="text-[16px] leading-none">+</span>
+                                Nueva cotización
+                            </button>
+                        </div>
                     </div>
 
                     <div className="mb-4 flex flex-wrap items-center gap-2 text-[12.5px]">
@@ -308,6 +320,15 @@ export default function Bandeja({ inbox, stats, canalActivo, rango, totalCotizac
                     )}
                 </div>
             </div>
+
+            <NuevaCotizacionModal
+                open={creando}
+                onClose={() => setCreando(false)}
+                servicios={serviciosCatalogo}
+                estados={estados}
+                mapsKey={mapsKey}
+                mapId={mapId}
+            />
         </InternoLayout>
     );
 }
