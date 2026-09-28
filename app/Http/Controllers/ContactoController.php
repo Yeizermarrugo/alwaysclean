@@ -102,7 +102,7 @@ class ContactoController extends Controller
 
         $cotizacion = Cotizacion::registrar([
             ...collect($data)->except(['whatsapp_normalizado', 'cf-turnstile-response'])->all(),
-            'whatsapp' => $this->formatearTelefono($telefono),
+            'whatsapp' => Cotizacion::formatearTelefono($telefono),
             'canal' => 'web',
         ]);
 
@@ -123,12 +123,6 @@ class ContactoController extends Controller
             .". Caso {$cotizacion->caso}.";
 
         return Inertia::location('https://wa.me/'.config('company.whatsapp').'?text='.urlencode($mensaje));
-    }
-
-    /** 3001234567 → "300 123 4567"; 6056001234 → "605 600 1234". */
-    private function formatearTelefono(string $digitos): string
-    {
-        return substr($digitos, 0, 3).' '.substr($digitos, 3, 3).' '.substr($digitos, 6);
     }
 
     private function validarTiempoDeLlenado(mixed $inicio): void

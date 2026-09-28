@@ -110,4 +110,10 @@ class Cotizacion extends Model
 
         return preg_match('/^(3\d{9}|60\d{8})$/', $digitos) ? $digitos : null;
     }
+
+    /** 3001234567 → "300 123 4567"; 6056001234 → "605 600 1234". */
+    public static function formatearTelefono(string $digitos): string
+    {
+        return substr($digitos, 0, 3).' '.substr($digitos, 3, 3).' '.substr($digitos, 6);
+    }
 }
