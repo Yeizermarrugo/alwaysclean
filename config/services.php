@@ -40,6 +40,12 @@ return [
         'map_id' => env('GOOGLE_MAPS_MAP_ID') ?: 'DEMO_MAP_ID',
     ],
 
+    // Medición de visitas y conversiones (resources/js/lib/analitica.js). Uno u otro.
+    'analitica' => [
+        'plausible_dominio' => env('ANALITICA_PLAUSIBLE_DOMINIO'),
+        'ga4_id' => env('ANALITICA_GA4_ID'),
+    ],
+
     'slack' => [
         'notifications' => [
             'bot_user_oauth_token' => env('SLACK_BOT_USER_OAUTH_TOKEN'),

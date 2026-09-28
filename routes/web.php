@@ -10,11 +10,15 @@ use App\Http\Controllers\NosotrosController;
 use App\Http\Controllers\PoliticasController;
 use App\Http\Controllers\PqrsController;
 use App\Http\Controllers\ProductoController;
+use App\Http\Controllers\SeoController;
 use App\Http\Controllers\ServicioController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [ServicioController::class, 'home'])->name('home');
+
+Route::get('/sitemap.xml', [SeoController::class, 'sitemap'])->name('seo.sitemap');
+Route::get('/robots.txt', [SeoController::class, 'robots'])->name('seo.robots');
 
 Route::get('/servicios', [ServicioController::class, 'index'])->name('servicios.index');
 Route::get('/servicios/{servicio:slug}', [ServicioController::class, 'show'])->name('servicios.show');

@@ -82,6 +82,14 @@ Laravel + Inertia (React/JSX) + Tailwind. Sitio público (home, servicios, produ
 - `EncabezadosSeguridad` (middleware web): X-Frame-Options DENY, nosniff, Referrer-Policy, Permissions-Policy (solo geolocalización propia), HSTS solo en producción+HTTPS, `X-Robots-Tag: noindex` en `/interno`. Sin CSP todavía.
 - Tests: `tests/Feature/SeguridadTest.php`.
 
+### Sitio público: SEO, errores y medición (2026-09-28)
+- **Metaetiquetas en el servidor** (`App\Support\Seo` → `app.blade.php`): Inertia sin SSR, así que `<Head>` de React no lo ven WhatsApp/Facebook. Título, descripción, canonical, Open Graph y JSON-LD `LocalBusiness` (solo en home) salen de Blade. Página nueva pública → agregarla a `Seo::PAGINAS` con el mismo título que su `SiteLayout title`. Textos tomados de cada página, no inventados.
+- Imagen para compartir: `public/images/og-default.jpg` (1200×630). Fichas de servicio usan su propia foto.
+- `/sitemap.xml` y `/robots.txt` son rutas (`SeoController`); `public/robots.txt` se borró. Fuera de producción robots bloquea todo (evita indexar `*.laravel.cloud`).
+- Errores 403/404 (y 500/503 sin `APP_DEBUG`) renderizan `Pages/Error.jsx`; 419 vuelve atrás con `errors.form`. Un 404 de ruta inexistente no pasa por el middleware web: las props del layout se comparten a mano en `bootstrap/app.php`.
+- Medición: `resources/js/lib/analitica.js` (`medir()`), Plausible o GA4 según `ANALITICA_PLAUSIBLE_DOMINIO` / `ANALITICA_GA4_ID`; no se carga en `/interno`. Eventos: todo clic a `wa.me` ("Clic WhatsApp", o `data-evento`), "Cotización enviada", "PQRS radicado", "Pedido de productos".
+- `/contacto`: el recuadro de relleno del mapa se reemplazó por un mapa embebido de la ciudad.
+
 ### Checklist al desplegar (Laravel Cloud)
 1. Variables: `APP_ENV=production`, `APP_DEBUG=false`, `TURNSTILE_SITE_KEY`/`TURNSTILE_SECRET_KEY` reales (las reales están comentadas en `.env` local; las `1x000…` son de prueba), `IP_DESDE_CLOUDFLARE=false` al inicio. `MAIL_FROM_ADDRESS` = buzón real que alguien lea (el correo pide "responda a este correo").
 2. Turnstile: agregar el dominio de producción (y el `*.laravel.cloud` si se prueba ahí) en los hostnames del widget "Always Clean - PQRS" (el mismo widget se usa en `/contacto`).
@@ -90,7 +98,9 @@ Laravel + Inertia (React/JSX) + Tailwind. Sitio público (home, servicios, produ
 5. Dominio en Cloudflare: confirmar en la doc de Laravel Cloud si va con proxy (nube naranja) o "DNS only" (Cloud ya corre sobre la red de Cloudflare).
 6. `SESSION_SECURE_COOKIE` queda en `true` solo con `APP_ENV=production` (config/session.php); no hace falta definirla.
 7. Pendientes legales: la casilla de datos enlaza a `/politicas` (política integral PO-SGI-001), no a una política de tratamiento de datos Ley 1581 — falta que la empresa la tenga.
-8. Google Maps (cotizaciones): crear clave de navegador con Maps JavaScript API + Places API (New) + Maps Embed API, restringida por *HTTP referrer* al dominio de producción → `GOOGLE_MAPS_BROWSER_KEY`. Opcional `GOOGLE_MAPS_MAP_ID` (sin él usa `DEMO_MAP_ID`). Sin clave, el formulario pide la dirección en texto y el panel usa el embed público de Maps.
+8. `APP_URL` = dominio real (https): lo usan canonical, Open Graph y sitemap.
+9. Medición: definir `ANALITICA_PLAUSIBLE_DOMINIO` o `ANALITICA_GA4_ID` (uno solo).
+10. Google Maps (cotizaciones): crear clave de navegador con Maps JavaScript API + Places API (New) + Maps Embed API, restringida por *HTTP referrer* al dominio de producción → `GOOGLE_MAPS_BROWSER_KEY`. Opcional `GOOGLE_MAPS_MAP_ID` (sin él usa `DEMO_MAP_ID`). Sin clave, el formulario pide la dirección en texto y el panel usa el embed público de Maps.
 
 ### Dev
 - Verificar UI con captura: Chromium headless de Playwright en `~/.cache/ms-playwright/chromium_headless_shell-*/*/chrome-headless-shell` (`--no-sandbox --screenshot=… URL`).

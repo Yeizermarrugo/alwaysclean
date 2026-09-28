@@ -1,9 +1,9 @@
 import { useRef, useState } from 'react';
 import { useForm, usePage } from '@inertiajs/react';
 import SiteLayout from '@/Layouts/SiteLayout';
-import PlaceholderPhoto from '@/Components/Site/PlaceholderPhoto';
 import UbicacionPicker from '@/Components/Site/UbicacionPicker';
 import TurnstileWidget from '@/Components/Site/TurnstileWidget';
+import { medir } from '@/lib/analitica';
 
 const PASOS = ['SERVICIO', 'SU SEDE', 'CONTACTO'];
 const FRECUENCIAS = [
@@ -58,14 +58,20 @@ export default function Contacto({ servicios, maps, inicio, turnstileSiteKey }) 
 
     const submit = (e) => {
         e.preventDefault();
+        let conError = false;
         post(route('contacto.store'), {
             // Si el error es de un paso anterior, volver a ese paso para que se vea.
             onError: (errs) => {
+                conError = true;
                 if (Object.keys(errs).some((k) => k.startsWith('servicios'))) setPaso(0);
                 else if (CAMPOS_SEDE.some((c) => errs[c])) setPaso(1);
             },
-            // El token de Turnstile es de un solo uso.
-            onFinish: () => turnstile.current?.reset(),
+            onFinish: () => {
+                // Sin errores el servidor redirige a WhatsApp: la cotización quedó registrada.
+                if (!conError) medir('Cotización enviada', { servicios: data.servicios.length });
+                // El token de Turnstile es de un solo uso.
+                turnstile.current?.reset();
+            },
         });
     };
 
@@ -286,7 +292,15 @@ export default function Contacto({ servicios, maps, inicio, turnstileSiteKey }) 
                         <div className="mb-2 font-sans text-[11px] font-semibold tracking-[0.14em] text-ink-500">SEDE PRINCIPAL</div>
                         <div className="text-sm text-navy-600">{empresa.ciudad}</div>
                     </div>
-                    <PlaceholderPhoto hint="mapa: zona de cobertura" className="h-[150px] rounded-[10px] p-2.5" />
+                    <div className="overflow-hidden rounded-[10px] border border-mist-300 bg-mist-100">
+                        <iframe
+                            title={`Mapa de ${empresa.ciudad}`}
+                            src={`https://maps.google.com/maps?${new URLSearchParams({ q: empresa.ciudad, z: '12', hl: 'es', output: 'embed' })}`}
+                            className="block h-[180px] w-full"
+                            loading="lazy"
+                            referrerPolicy="no-referrer-when-downgrade"
+                        />
+                    </div>
                     <div className="text-[12.5px] leading-relaxed text-ink-500">{empresa.horario}</div>
                 </div>
             </div>

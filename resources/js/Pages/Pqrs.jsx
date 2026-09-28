@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { Link, useForm, usePage } from '@inertiajs/react';
 import SiteLayout from '@/Layouts/SiteLayout';
+import { medir } from '@/lib/analitica';
 
 export default function Pqrs({ tipos, inicio, turnstileSiteKey }) {
     const { flash } = usePage().props;
@@ -55,7 +56,10 @@ export default function Pqrs({ tipos, inicio, turnstileSiteKey }) {
     const submit = (e) => {
         e.preventDefault();
         post(route('pqrs.store'), {
-            onSuccess: () => reset(),
+            onSuccess: (page) => {
+                if (page.props.flash?.caso) medir('PQRS radicado', { tipo: data.tipo });
+                reset();
+            },
             // El token de Turnstile es de un solo uso.
             onFinish: () => {
                 if (widgetId.current !== null) window.turnstile?.reset(widgetId.current);

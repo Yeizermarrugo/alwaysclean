@@ -28,7 +28,7 @@ export default function Home({ destacados, todos, conteos, productos }) {
     const totalServicios = todos.length;
 
     return (
-        <SiteLayout title="Inicio">
+        <SiteLayout title="Limpieza, desinfección y saneamiento en Cartagena">
             {/* Hero */}
             <div className="grid gap-8 bg-mist-50 lg:grid-cols-[1.05fr_.95fr]">
                 <div className="flex flex-col gap-5 self-center px-5 py-12 lg:px-10 lg:py-16">
