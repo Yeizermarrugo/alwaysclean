@@ -45,7 +45,7 @@ Laravel + Inertia (React/JSX) + Tailwind. Sitio público (home, servicios, produ
 - **Uploads configurables**: `config('filesystems.uploads_disk')` (`UPLOADS_DISK`, por defecto `public`). Todo acceso a imágenes subidas pasa por `App\Support\Uploads` (`url()`, `delete()`, `diskName()`); no usar `Storage::disk('public')` ni `'/storage/'.` directos. En producción `UPLOADS_DISK=s3`.
 - **Laravel 13.32** (antes 11.55.1, que tenía avisos de seguridad sin parche: CRLF en la regla `email`, URLs firmadas). Actualizados también `tinker ^3`, `phpunit ^12`, `collision ^8.6`, `sanctum ^4.3`. Sin cambios de código necesarios; el CSRF ahora es `PreventRequestForgery` (no hay referencias directas en el proyecto).
 - **Despliegue decidido**: Laravel Cloud, plan Starter, misma organización que `dilodepartededios.com`.
-- **Seguridad pendiente (ver `TODO.md`)**: login del panel sin rate limit. (PQRS resuelto el 2026-09-23, ver abajo.)
+- **Seguridad**: PQRS resuelto el 2026-09-23 y login/encabezados el 2026-09-28 (ver abajo). Pendientes en `TODO.md`.
 
 ## Sesión 2026-09-23 — PQRS blindado + UI
 
@@ -76,13 +76,19 @@ Laravel + Inertia (React/JSX) + Tailwind. Sitio público (home, servicios, produ
 - Ubicación: `direccion` obligatoria + `referencia`, `latitud`, `longitud`, `place_id`. Formulario: `UbicacionPicker.jsx` (Places API New + pin arrastrable, solo con `GOOGLE_MAPS_BROWSER_KEY`). Panel: `UbicacionCard.jsx` (mapa, cómo llegar, enviar a cuadrilla).
 - Tests: `CotizacionProteccionTest.php`, `CotizacionUbicacionTest.php` (datos compartidos en `tests/Feature/Concerns/DatosCotizacion.php`).
 
+### Seguridad del panel y del sitio (2026-09-28)
+- Login: 5 fallos por correo+IP → bloqueo 15 min (`SessionController::MAX_INTENTOS`), más `throttle:login` 20/min por IP. Por correo+IP y no solo correo para que un tercero no pueda bloquearle la cuenta al dueño.
+- Ziggy: visitantes sin sesión reciben solo el grupo `publico` (`config/ziggy.php`, `@routes(...)` en `app.blade.php`). **Login y logout responden con `Inertia::location`** (recarga completa) para que el navegador reciba/descarte las rutas del panel; con una visita Inertia normal el panel fallaría con "route not found". Rutas nuevas públicas: agregarlas al grupo.
+- `EncabezadosSeguridad` (middleware web): X-Frame-Options DENY, nosniff, Referrer-Policy, Permissions-Policy (solo geolocalización propia), HSTS solo en producción+HTTPS, `X-Robots-Tag: noindex` en `/interno`. Sin CSP todavía.
+- Tests: `tests/Feature/SeguridadTest.php`.
+
 ### Checklist al desplegar (Laravel Cloud)
 1. Variables: `APP_ENV=production`, `APP_DEBUG=false`, `TURNSTILE_SITE_KEY`/`TURNSTILE_SECRET_KEY` reales (las reales están comentadas en `.env` local; las `1x000…` son de prueba), `IP_DESDE_CLOUDFLARE=false` al inicio. `MAIL_FROM_ADDRESS` = buzón real que alguien lea (el correo pide "responda a este correo").
 2. Turnstile: agregar el dominio de producción (y el `*.laravel.cloud` si se prueba ahí) en los hostnames del widget "Always Clean - PQRS" (el mismo widget se usa en `/contacto`).
 3. Usuario solo-INSERT: correr `database/sql/pqrs_publico_usuario.sql` en la MySQL de Cloud (cambiar nombre de BD y contraseña) y poner `DB_PQRS_USERNAME`/`DB_PQRS_PASSWORD`. Confirmar antes que Cloud permita crear usuarios con permisos por tabla; si no, dejar vacías (funciona con la conexión normal).
 4. IP real: logueado, desde el celular con datos móviles, abrir `/interno/diagnostico-ip` y comparar con https://ifconfig.me. Si `cf_connecting_ip` coincide → `IP_DESDE_CLOUDFLARE=true` y verificar que `ip_para_limites` muestre esa IP. Si viene vacío → dejar `false` y revisar `request_ip`/`x_forwarded_for` antes de decidir.
 5. Dominio en Cloudflare: confirmar en la doc de Laravel Cloud si va con proxy (nube naranja) o "DNS only" (Cloud ya corre sobre la red de Cloudflare).
-6. Login del panel sigue **sin límite de intentos** (ver `TODO.md`); hacerlo antes de salir a producción, usando `IpVisitante`.
+6. `SESSION_SECURE_COOKIE` queda en `true` solo con `APP_ENV=production` (config/session.php); no hace falta definirla.
 7. Pendientes legales: la casilla de datos enlaza a `/politicas` (política integral PO-SGI-001), no a una política de tratamiento de datos Ley 1581 — falta que la empresa la tenga.
 8. Google Maps (cotizaciones): crear clave de navegador con Maps JavaScript API + Places API (New) + Maps Embed API, restringida por *HTTP referrer* al dominio de producción → `GOOGLE_MAPS_BROWSER_KEY`. Opcional `GOOGLE_MAPS_MAP_ID` (sin él usa `DEMO_MAP_ID`). Sin clave, el formulario pide la dirección en texto y el panel usa el embed público de Maps.
 

@@ -32,7 +32,7 @@ Route::post('/pqrs', [PqrsController::class, 'store'])->middleware('throttle:pqr
 
 Route::middleware('guest')->group(function () {
     Route::get('/interno/login', [SessionController::class, 'create'])->name('login');
-    Route::post('/interno/login', [SessionController::class, 'store'])->name('interno.login.store');
+    Route::post('/interno/login', [SessionController::class, 'store'])->middleware('throttle:login')->name('interno.login.store');
 });
 
 Route::middleware('auth')->group(function () {

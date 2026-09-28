@@ -33,6 +33,13 @@ class AppServiceProvider extends ServiceProvider
                 'form' => 'Demasiados intentos desde su conexión. Inténtelo de nuevo más tarde.',
             ])));
 
+        // Tope grueso por IP al login del panel (probar muchas cuentas desde una
+        // conexión). El límite por cuenta vive en SessionController.
+        RateLimiter::for('login', fn (Request $request) => Limit::perMinute(20)->by(IpVisitante::de($request))
+            ->response(fn () => back()->withErrors([
+                'email' => 'Demasiados intentos desde su conexión. Espere un minuto e inténtelo de nuevo.',
+            ])));
+
         // Igual para POST /contacto; los límites por cotización creada viven en ContactoController.
         RateLimiter::for('contacto', fn (Request $request) => Limit::perHour(20)->by(IpVisitante::de($request))
             ->response(fn () => back()->withErrors([

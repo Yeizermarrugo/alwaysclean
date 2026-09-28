@@ -22,7 +22,10 @@ Hoy no tiene throttle, captcha ni honeypot, y envía un correo desde el dominio 
 - [x] **Conexión `pqrs_publico`** para el formulario: el guardado público solo hace INSERT (duplicados en caché, número de caso sin consultar, correo en cola sin el modelo). Código listo.
 - [ ] **Crear el usuario MySQL** con `database/sql/pqrs_publico_usuario.sql` (local y en Laravel Cloud) y poner `DB_PQRS_USERNAME` / `DB_PQRS_PASSWORD`. Confirmar que Laravel Cloud deja crear usuarios con permisos por tabla.
 
-- [ ] **Rate limit al login** del panel (`Auth\SessionController@store`): ~5 intentos/min por IP+email. Hoy no hay ningún límite.
+- [x] **Rate limit al login** del panel: 5 fallos por correo+IP → bloqueo 15 min (`SessionController`) + `throttle:login` 20/min por IP.
+- [x] **Encabezados de seguridad** (`EncabezadosSeguridad`): X-Frame-Options, nosniff, Referrer-Policy, Permissions-Policy, HSTS en producción, `noindex` en `/interno`.
+- [x] **Rutas del panel ocultas** a visitantes (Ziggy grupo `publico`).
+- [ ] **Content-Security-Policy**: empezar en modo `Report-Only` (Maps, Turnstile, Fonts, Unsplash, estilos en línea).
 - [ ] **Paginar el panel de PQRS**: `Interno\PqrsController@index` hace `PqrsCaso::orderByDesc('created_at')->get()` de todo.
 - [~] **Cifrar `documento` y `telefono`** con cast `'encrypted'` en `PqrsCaso` + migración/comando que cifre las filas existentes. Ojo: no se podrá buscar por esos campos; **guardar `APP_KEY` en un gestor de contraseñas** (perderla = perder esos datos). — *Descartado por ahora (decisión 2026-09-23).*
 - [~] **Política de retención**: borrar/anonimizar casos cerrados tras un plazo (definir cuánto) — Ley 1581. — *Descartado por ahora (decisión 2026-09-23).*
