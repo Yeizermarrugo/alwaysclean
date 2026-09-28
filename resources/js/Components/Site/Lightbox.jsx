@@ -16,7 +16,7 @@ export default function Lightbox({ imagenes, index, onClose, onChange }) {
     if (index === null) return null;
 
     return (
-        <div className="fixed inset-0 z-50 flex flex-col bg-navy-deep/95 px-4 py-6" onClick={onClose}>
+        <div className="fixed inset-0 z-[60] flex flex-col bg-navy-deep/95 px-4 py-6" onClick={onClose}>
             <div className="flex items-center justify-between text-white">
                 <span className="font-display text-sm font-semibold">{index + 1} / {imagenes.length}</span>
                 <button onClick={onClose} className="grid h-9 w-9 place-items-center rounded-lg text-xl hover:bg-white/10">✕</button>
