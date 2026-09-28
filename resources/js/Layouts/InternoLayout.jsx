@@ -8,17 +8,18 @@ const NAV = [
     { label: 'Cuadrillas' },
 ];
 
-export default function InternoLayout({ title, children }) {
+export default function InternoLayout({ title, pantallaCompleta = false, children }) {
     const { auth, pqrsPendientes } = usePage().props;
     const currentRoute = route().current();
 
     const logout = () => router.post(route('interno.logout'));
 
     return (
-        <div className="min-h-screen bg-white">
+        // pantallaCompleta: en escritorio la página ocupa justo la ventana y cada panel hace su propio scroll.
+        <div className={`bg-white ${pantallaCompleta ? 'min-h-screen lg:flex lg:h-pantalla lg:min-h-0 lg:flex-col lg:overflow-hidden' : 'min-h-screen'}`}>
             <Head title={`Panel interno · ${title}`} />
 
-            <div className="flex flex-wrap items-center justify-between gap-3 bg-navy px-5 py-2.5 lg:px-7">
+            <div className="flex shrink-0 flex-wrap items-center justify-between gap-3 bg-navy px-5 py-2.5 lg:px-7">
                 <Link href={route('interno.bandeja')} className="flex items-center gap-3">
                     <span className="grid h-10 w-10 place-items-center rounded-xl bg-white shadow-sm">
                         <img src="/images/logo-gota.png" alt="" className="h-7 w-auto" />
@@ -58,7 +59,7 @@ export default function InternoLayout({ title, children }) {
                 </div>
             </div>
 
-            {children}
+            {pantallaCompleta ? <div className="lg:flex lg:min-h-0 lg:flex-1 lg:flex-col">{children}</div> : children}
         </div>
     );
 }

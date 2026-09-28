@@ -20,7 +20,7 @@ const ESTADO_TONE = {
     cerrada_perdida: 'bg-red-50 text-alert',
 };
 
-export default function Bandeja({ inbox, stats, canalActivo, estados, seleccionada, mapsKey }) {
+export default function Bandeja({ inbox, stats, canalActivo, rango, totalCotizaciones, estados, seleccionada, mapsKey }) {
     const [estado, setEstado] = useState(seleccionada?.estado ?? 'nueva');
     const [cuadrilla, setCuadrilla] = useState(seleccionada?.cuadrilla ?? '');
     const [motivoPerdida, setMotivoPerdida] = useState(seleccionada?.motivo_perdida ?? '');
@@ -33,10 +33,23 @@ export default function Bandeja({ inbox, stats, canalActivo, estados, selecciona
         return r.cliente.toLowerCase().includes(q) || r.servicio.toLowerCase().includes(q);
     });
 
+    // Filtros activos en la URL (sin valores vacíos).
+    const filtros = (cambios = {}) => Object.fromEntries(
+        Object.entries({ canal: canalActivo, desde: rango.desde, hasta: rango.hasta, ...cambios }).filter(([, v]) => v),
+    );
+
+    const filtrar = (cambios) => {
+        router.get(route('interno.bandeja', filtros(cambios)), {}, { preserveState: true, preserveScroll: true, replace: true });
+    };
+
+    const hayFechas = Boolean(rango.desde || rango.hasta);
+
     const seleccionar = (caso) => {
         setNota('');
-        router.get(route('interno.bandeja', { caso, ...(canalActivo ? { canal: canalActivo } : {}) }), {}, {
-            preserveState: false,
+        router.get(route('interno.bandeja', { ...filtros(), caso }), {}, {
+            // preserveState: la lista no se remonta y conserva su scroll y la búsqueda.
+            preserveState: true,
+            preserveScroll: true,
             onSuccess: (page) => {
                 const s = page.props.seleccionada;
                 setEstado(s?.estado ?? 'nueva');
@@ -53,22 +66,24 @@ export default function Bandeja({ inbox, stats, canalActivo, estados, selecciona
     };
 
     return (
-        <InternoLayout title="Cotizaciones">
-            <div className="grid grid-cols-2 divide-x divide-mist-300 border-b border-mist-300 lg:grid-cols-4">
+        <InternoLayout title="Cotizaciones" pantallaCompleta>
+            <div className="grid shrink-0 grid-cols-2 divide-x divide-mist-300 border-b border-mist-300 lg:grid-cols-4">
                 <Stat label="NUEVAS HOY" value={stats.nuevasHoy} />
                 <Stat label="SIN RESPONDER >24 H" value={stats.sinResponder} tone="text-alert" />
                 <Stat label="EN CURSO" value={stats.enviadasSemana} />
                 <Stat label="TASA DE CIERRE" value={`${stats.tasaCierre}%`} tone="text-green-dark" />
             </div>
 
-            <div className="grid lg:grid-cols-[1fr_380px]">
-                <div className="border-b border-mist-300 px-5 py-5 lg:border-b-0 lg:border-r lg:px-7 lg:py-5">
-                    <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+            <div className="grid lg:min-h-0 lg:flex-1 lg:grid-cols-[1fr_380px]">
+                <div className="flex flex-col border-b border-mist-300 px-5 pt-5 lg:min-h-0 lg:border-b-0 lg:border-r lg:px-7">
+                    <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
                         <div className="inline-flex overflow-hidden rounded-lg border border-mist-300 font-display text-[12.5px] font-semibold">
                             {CANALES.map(([value, label]) => (
                                 <Link
                                     key={label}
-                                    href={route('interno.bandeja', value ? { canal: value } : {})}
+                                    href={route('interno.bandeja', filtros({ canal: value }))}
+                                    preserveState
+                                    preserveScroll
                                     className={`border-l border-mist-300 px-3.5 py-2.5 first:border-l-0 ${(canalActivo ?? null) === value ? 'bg-navy text-white' : 'text-navy-700'}`}
                                 >
                                     {label}
@@ -83,11 +98,67 @@ export default function Bandeja({ inbox, stats, canalActivo, estados, selecciona
                         />
                     </div>
 
-                    <div className="hidden grid-cols-[90px_1.2fr_1.4fr_.8fr_.8fr_1fr_.8fr] border-b border-mist-300 pb-2.5 font-sans text-[10.5px] font-semibold tracking-[0.1em] text-ink-500 lg:grid">
+                    <div className="mb-4 flex flex-wrap items-center gap-2 text-[12.5px]">
+                        <span className="font-sans text-[10.5px] font-semibold tracking-[0.1em] text-ink-500">RECIBIDAS</span>
+                        <label className="flex items-center gap-1.5 text-navy-500">
+                            Desde
+                            <input
+                                type="date"
+                                value={rango.desde ?? ''}
+                                max={rango.hasta ?? undefined}
+                                onChange={(e) => filtrar({ desde: e.target.value })}
+                                className="rounded-lg border border-mist-400 px-2.5 py-1.5 text-[12.5px] text-navy focus:border-green focus:ring-green"
+                            />
+                        </label>
+                        <label className="flex items-center gap-1.5 text-navy-500">
+                            Hasta
+                            <input
+                                type="date"
+                                value={rango.hasta ?? ''}
+                                min={rango.desde ?? undefined}
+                                onChange={(e) => filtrar({ hasta: e.target.value })}
+                                className="rounded-lg border border-mist-400 px-2.5 py-1.5 text-[12.5px] text-navy focus:border-green focus:ring-green"
+                            />
+                        </label>
+                        <div className="flex flex-wrap gap-1.5">
+                            {ATAJOS.map(([label, dias]) => {
+                                const r = rangoUltimos(dias);
+                                const activo = rango.desde === r.desde && rango.hasta === r.hasta;
+                                return (
+                                    <button
+                                        key={label}
+                                        type="button"
+                                        onClick={() => filtrar(r)}
+                                        className={`rounded-full border px-2.5 py-1 font-display text-[12px] font-semibold ${
+                                            activo ? 'border-navy bg-navy text-white' : 'border-mist-border text-navy-600 hover:border-navy'
+                                        }`}
+                                    >
+                                        {label}
+                                    </button>
+                                );
+                            })}
+                            {hayFechas && (
+                                <button
+                                    type="button"
+                                    onClick={() => filtrar({ desde: null, hasta: null })}
+                                    className="px-1.5 font-display text-[12px] font-semibold text-ink-500 hover:text-alert"
+                                >
+                                    Quitar fechas ✕
+                                </button>
+                            )}
+                        </div>
+                        <span className="ml-auto text-ink-500">
+                            {inboxFiltrado.length === totalCotizaciones
+                                ? `${totalCotizaciones} cotizaciones`
+                                : `${inboxFiltrado.length} de ${totalCotizaciones} cotizaciones`}
+                        </span>
+                    </div>
+
+                    <div className="hidden shrink-0 grid-cols-[90px_1.2fr_1.4fr_.8fr_.8fr_1fr_.8fr] border-b border-mist-300 pb-2.5 font-sans text-[10.5px] font-semibold tracking-[0.1em] text-ink-500 lg:grid">
                         <span>CASO</span><span>CLIENTE</span><span>SERVICIO</span><span>SEDE</span><span>CANAL</span><span>ESTADO</span><span>RECIBIDA</span>
                     </div>
 
-                    <div className="flex flex-col">
+                    <div className="flex flex-col pb-5 lg:-mr-3 lg:min-h-0 lg:flex-1 lg:overflow-y-auto lg:overscroll-contain lg:pr-3">
                         {inboxFiltrado.map((r) => (
                             <button
                                 key={r.caso}
@@ -118,13 +189,15 @@ export default function Bandeja({ inbox, stats, canalActivo, estados, selecciona
                         ))}
                         {inboxFiltrado.length === 0 && (
                             <p className="py-8 text-center text-navy-500">
-                                {busqueda ? `Sin resultados para "${busqueda}".` : 'Sin cotizaciones en este canal.'}
+                                {busqueda
+                                    ? `Sin resultados para "${busqueda}".`
+                                    : hayFechas ? 'Sin cotizaciones en este rango de fechas.' : 'Sin cotizaciones en este canal.'}
                             </p>
                         )}
                     </div>
                 </div>
 
-                <div className="flex flex-col gap-3.5 bg-mist-50 px-5 py-5 lg:px-6">
+                <div key={seleccionada?.id ?? 'vacio'} className="flex flex-col gap-3.5 bg-mist-50 px-5 py-5 lg:min-h-0 [&>*]:shrink-0 lg:overflow-y-auto lg:overscroll-contain lg:px-6">
                     {seleccionada ? (
                         <>
                             <div className="flex items-center justify-between">
@@ -237,6 +310,24 @@ export default function Bandeja({ inbox, stats, canalActivo, estados, selecciona
             </div>
         </InternoLayout>
     );
+}
+
+const ATAJOS = [
+    ['Hoy', 0],
+    ['7 días', 6],
+    ['30 días', 29],
+];
+
+function fechaLocal(d) {
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+}
+
+/** Rango de los últimos `dias` días más hoy, en hora local. */
+function rangoUltimos(dias) {
+    const hasta = new Date();
+    const desde = new Date();
+    desde.setDate(desde.getDate() - dias);
+    return { desde: fechaLocal(desde), hasta: fechaLocal(hasta) };
 }
 
 function Stat({ label, value, tone = 'text-navy' }) {

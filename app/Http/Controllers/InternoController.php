@@ -11,12 +11,20 @@ use Inertia\Response;
 
 class InternoController extends Controller
 {
+    /** Los timestamps se guardan en UTC; los días del filtro y de "hoy" son los de Colombia. */
+    private const ZONA_NEGOCIO = 'America/Bogota';
+
     public function bandeja(Request $request): Response
     {
         $todas = Cotizacion::orderByDesc('created_at')->get();
 
         $canal = $request->query('canal');
-        $listado = $canal ? $todas->where('canal', $canal) : $todas;
+        [$desde, $hasta] = $this->rangoFechas($request);
+
+        $listado = $todas
+            ->when($canal, fn ($c) => $c->where('canal', $canal))
+            ->when($desde, fn ($c) => $c->where('created_at', '>=', $desde->copy()->startOfDay()->utc()))
+            ->when($hasta, fn ($c) => $c->where('created_at', '<=', $hasta->copy()->endOfDay()->utc()));
 
         $casoSeleccionado = $request->query('caso');
         $seleccionadaModelo = $casoSeleccionado
@@ -49,16 +57,45 @@ class InternoController extends Controller
                 'recibida' => $c->created_at->diffForHumans(['short' => true]),
             ]),
             'stats' => [
-                'nuevasHoy' => $todas->where('created_at', '>=', Carbon::today())->count(),
+                'nuevasHoy' => $todas->where('created_at', '>=', Carbon::today(self::ZONA_NEGOCIO)->utc())->count(),
                 'sinResponder' => $todas->where('estado', 'nueva')->where('created_at', '<', Carbon::now()->subHours(24))->count(),
                 'enviadasSemana' => $todas->whereIn('estado', ['cotizada', 'agendada', 'en_ejecucion'])->where('created_at', '>=', Carbon::now()->subWeek())->count(),
                 'tasaCierre' => $todas->count() ? round($todas->where('estado', 'cerrada_ganada')->count() / $todas->count() * 100) : 0,
             ],
             'canalActivo' => $canal,
+            'rango' => ['desde' => $desde?->toDateString(), 'hasta' => $hasta?->toDateString()],
+            'totalCotizaciones' => $todas->count(),
             'estados' => Cotizacion::ESTADOS,
             'seleccionada' => $seleccionada,
             'mapsKey' => config('services.google_maps.browser_key'),
         ]);
+    }
+
+    /**
+     * Rango de fechas del filtro (?desde=AAAA-MM-DD&hasta=AAAA-MM-DD). Fechas
+     * inválidas se ignoran; si vienen invertidas se intercambian.
+     *
+     * @return array{0: ?Carbon, 1: ?Carbon}
+     */
+    private function rangoFechas(Request $request): array
+    {
+        $leer = function (?string $valor): ?Carbon {
+            if (! $valor || ! preg_match('/^\d{4}-\d{2}-\d{2}$/', $valor)) {
+                return null;
+            }
+            $fecha = Carbon::createFromFormat('!Y-m-d', $valor, self::ZONA_NEGOCIO);
+
+            return $fecha && $fecha->format('Y-m-d') === $valor ? $fecha : null;
+        };
+
+        $desde = $leer($request->query('desde'));
+        $hasta = $leer($request->query('hasta'));
+
+        if ($desde && $hasta && $desde->gt($hasta)) {
+            [$desde, $hasta] = [$hasta, $desde];
+        }
+
+        return [$desde, $hasta];
     }
 
     public function actualizar(Request $request, Cotizacion $cotizacion)
