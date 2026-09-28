@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { router, useForm } from '@inertiajs/react';
+import { router, useForm, usePage } from '@inertiajs/react';
 import InternoLayout from '@/Layouts/InternoLayout';
 import Modal from '@/Components/Modal';
 import ImageField from '@/Components/Interno/ImageField';
@@ -14,6 +14,7 @@ export default function ServiciosIndex({ servicios, categorias }) {
     const [editando, setEditando] = useState(null); // null = cerrado, {} = nuevo, {...} = editar
     const [galeria, setGaleria] = useState([]);
     const { data, setData, post, processing, errors, reset } = useForm(vacio);
+    const errorActivo = usePage().props.errors?.activo;
 
     const abrirNuevo = () => {
         reset();
@@ -58,6 +59,11 @@ export default function ServiciosIndex({ servicios, categorias }) {
             </div>
 
             <div className="px-5 pb-10 lg:px-7">
+                {errorActivo && (
+                    <div className="mb-4 rounded-[10px] border border-alert/40 bg-alert/5 px-4 py-3 text-[13.5px] font-medium text-alert">
+                        {errorActivo}
+                    </div>
+                )}
                 <div className="hidden grid-cols-[46px_50px_1.4fr_1fr_.7fr_.6fr_.5fr_auto] gap-3 border-b border-mist-300 pb-2.5 font-sans text-[10.5px] font-semibold tracking-[0.1em] text-ink-500 lg:grid">
                     <span></span><span>COD</span><span>NOMBRE</span><span>CATEGORÍA</span><span>DESTACADO</span><span>ESTADO</span><span>ORDEN</span><span></span>
                 </div>
@@ -73,6 +79,11 @@ export default function ServiciosIndex({ servicios, categorias }) {
                         <span className="font-mono text-[11.5px] text-green-dark">{s.codigo}</span>
                         <span className="font-display font-semibold text-navy">
                             {s.nombre}
+                            {!s.completo && (
+                                <span className="ml-1.5 rounded-full bg-amber-50 px-1.5 py-0.5 font-sans text-[10px] font-semibold text-amber-700" title="Faltan textos: complete y active desde Editar">
+                                    Por completar
+                                </span>
+                            )}
                             {s.imagenes?.length > 0 && (
                                 <span className="ml-1.5 rounded-full bg-mist-100 px-1.5 py-0.5 font-sans text-[10px] font-semibold text-navy-500">
                                     {s.imagenes.length} {s.imagenes.length === 1 ? 'foto' : 'fotos'}

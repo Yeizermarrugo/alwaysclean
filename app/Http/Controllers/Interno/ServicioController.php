@@ -16,7 +16,8 @@ class ServicioController extends Controller
     public function index(): Response
     {
         return Inertia::render('Interno/Servicios/Index', [
-            'servicios' => Servicio::with('imagenes')->orderBy('categoria')->orderBy('orden')->get(),
+            'servicios' => Servicio::with('imagenes')->orderBy('categoria')->orderBy('orden')->get()
+                ->each(fn (Servicio $s) => $s->setAttribute('completo', $s->estaCompleto())),
             'categorias' => Servicio::CATEGORIAS,
         ]);
     }
@@ -60,6 +61,13 @@ class ServicioController extends Controller
 
     public function toggleActivo(Servicio $servicio)
     {
+        // Servicios creados desde el portafolio sin textos: no se publican vacíos.
+        if (! $servicio->activo && ! $servicio->estaCompleto()) {
+            return back()->withErrors([
+                'activo' => "Complete resumen, descripción, meta, qué incluye y sectores de «{$servicio->nombre}» antes de hacerlo visible.",
+            ]);
+        }
+
         $servicio->update(['activo' => ! $servicio->activo]);
 
         return back();

@@ -196,6 +196,62 @@ class ServicioSeeder extends Seeder
 
             self::fotosReales($modelo);
         }
+
+        self::crearPendientesDelPortafolio();
+    }
+
+    /**
+     * Servicios de la pág. 05 del portafolio (PDF) que no existían en el sitio.
+     * El PDF solo trae el nombre: se crean OCULTOS y sin textos para que la
+     * empresa complete resumen, descripción, qué incluye y sectores desde el
+     * panel y los active. No inventar esos textos.
+     *
+     * "Renta de equipos" es una sección aparte en el PDF; mientras no exista esa
+     * categoría en el sitio, el alquiler de equipos queda en "obras".
+     */
+    public const PENDIENTES_DEL_PORTAFOLIO = [
+        ['limpieza', 'Personal de aseo'],
+        ['limpieza', 'Limpieza de paneles solares'],
+        ['sanitarios', 'Lavado de tanques de combustibles'],
+        ['sanitarios', 'Limpieza de pozos sépticos'],
+        ['sanitarios', 'Limpieza y destaponamiento de cañerías'],
+        ['sanitarios', 'Limpieza y desinfección de redes de acueducto'],
+        ['obras', 'Obras civiles, acueducto y alcantarillado'],
+        ['obras', 'Impermeabilización y reparación de tanques y cubiertas'],
+        ['obras', 'Alquiler de equipos de construcción, limpieza y seguridad'],
+    ];
+
+    /** Idempotente: no duplica si el servicio ya existe (por slug). */
+    public static function crearPendientesDelPortafolio(): void
+    {
+        $orden = (int) Servicio::max('orden');
+
+        foreach (self::PENDIENTES_DEL_PORTAFOLIO as [$categoria, $nombre]) {
+            $slug = Str::slug($nombre);
+
+            if (Servicio::where('slug', $slug)->exists()) {
+                continue;
+            }
+
+            $orden++;
+            $servicio = Servicio::create([
+                'codigo' => str_pad((string) $orden, 2, '0', STR_PAD_LEFT),
+                'slug' => $slug,
+                'categoria' => $categoria,
+                'nombre' => $nombre,
+                'resumen' => '',
+                'descripcion' => '',
+                'meta' => '',
+                'imagen_hint' => '',
+                'incluye' => [],
+                'sectores' => [],
+                'destacado' => false,
+                'activo' => false,
+                'orden' => $orden,
+            ]);
+
+            self::fotosReales($servicio);
+        }
     }
 
     /**

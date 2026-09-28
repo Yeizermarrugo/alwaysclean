@@ -102,6 +102,7 @@ Laravel + Inertia (React/JSX) + Tailwind. Sitio público (home, servicios, produ
 - Fuente: carpeta de Drive "FOTOS PAGINA WEB" (descargada en `C:\Users\yemav\Downloads\FOTOS PAGINA WEB-20260917T215913Z-1-001`). Fotos nombradas por servicio + `PREGUNTAS FRECUENTES.docx`, logos DADIS/EPA, banner FENALCO, mascota del bono.
 - Servicios: portada `public/images/servicios/{slug}.jpg` y galería `galeria/{slug}-N.jpg` (versionadas, máx. 1600 px, **sin EXIF/GPS**). `ServicioSeeder::fotosReales()` las asigna. `Uploads::url()` deja pasar rutas que empiezan por `/` (estáticas) y `Uploads::delete()` nunca las borra.
 - Sin foto en la carpeta: embarcaciones y aires acondicionados. Fotos sin usar aptas para servicios del PDF aún no creados: trípode/espacio confinado, hidrante (redes de acueducto), zanja (obras civiles), termonebulización.
+- 9 servicios de la pág. 05 del PDF creados **ocultos y sin textos** (`ServicioSeeder::PENDIENTES_DEL_PORTAFOLIO`, idempotente). La empresa los completa en el panel; `toggleActivo` no deja activar uno incompleto (`Servicio::estaCompleto()`), y la lista muestra "Por completar". Alquiler de equipos quedó en `obras` porque no existe la categoría "Renta de equipos".
 - Preguntas frecuentes: `App\Support\PreguntasFrecuentes` (texto del .docx, solo tildes/puntuación) → sección en el inicio + JSON-LD FAQPage. "Avalados por" DADIS/EPA y "Afiliados a" FENALCO en `public/images/avales/`.
 
 ### Checklist al desplegar (Laravel Cloud)
