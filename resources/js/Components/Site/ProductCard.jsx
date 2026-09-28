@@ -1,8 +1,12 @@
-import { waLink } from '@/lib/whatsapp';
-import { usePage } from '@inertiajs/react';
+import { useState } from 'react';
+import { carrito, presentaciones, useCarrito } from '@/lib/carrito';
+import { SelectorCantidad } from '@/Components/Site/PedidoDrawer';
 
 export default function ProductCard({ producto, onVerFicha }) {
-    const { empresa } = usePage().props;
+    const { cantidadDe, claveDe } = useCarrito();
+    const opciones = presentaciones(producto);
+    const [presentacion, setPresentacion] = useState(opciones[0] ?? '');
+    const cantidad = cantidadDe(producto.id, presentacion);
 
     return (
         <div className="flex flex-col overflow-hidden rounded-xl border border-mist-300">
@@ -28,20 +32,63 @@ export default function ProductCard({ producto, onVerFicha }) {
                         <span className="text-ink-500">Aplicación</span>
                         <span>{producto.aplicacion}</span>
                     </div>
-                    <div className="flex justify-between">
-                        <span className="text-ink-500">Presentación</span>
-                        <span>{producto.presentacion}</span>
-                    </div>
+                    {opciones.length <= 1 && (
+                        <div className="flex justify-between">
+                            <span className="text-ink-500">Presentación</span>
+                            <span>{producto.presentacion}</span>
+                        </div>
+                    )}
                 </div>
+                {opciones.length > 1 && (
+                    <div>
+                        <div className="mb-1.5 text-[12px] text-ink-500">Presentación</div>
+                        <div className="flex flex-wrap gap-1.5" role="radiogroup" aria-label={`Presentación de ${producto.nombre}`}>
+                            {opciones.map((op) => (
+                                <button
+                                    key={op}
+                                    type="button"
+                                    role="radio"
+                                    aria-checked={presentacion === op}
+                                    onClick={() => setPresentacion(op)}
+                                    className={`rounded-full border px-3 py-1.5 font-display text-[12px] font-semibold ${
+                                        presentacion === op ? 'border-navy bg-navy text-white' : 'border-mist-border text-navy-600 hover:border-navy'
+                                    }`}
+                                >
+                                    {op}
+                                    {cantidadDe(producto.id, op) > 0 && presentacion !== op && (
+                                        <span className="ml-1.5 text-green-dark">· {cantidadDe(producto.id, op)}</span>
+                                    )}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+                )}
                 <div className="mt-1.5 flex gap-2">
-                    <a
-                        href={waLink(empresa.whatsapp, `Hola, quiero precio de ${producto.nombre}.`)}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex-1 rounded-lg bg-green py-2.5 text-center font-display text-[13px] font-semibold text-white"
-                    >
-                        Pedir precio
-                    </a>
+                    {cantidad > 0 ? (
+                        <div className="flex flex-1 items-center justify-between gap-2 rounded-lg bg-green-light py-1 pl-1 pr-2.5">
+                            <SelectorCantidad
+                                valor={cantidad}
+                                onCambiar={(n) => carrito.cambiar(claveDe(producto.id, presentacion), n)}
+                                nombre={producto.nombre}
+                                compacto
+                            />
+                            <button
+                                type="button"
+                                onClick={carrito.abrir}
+                                className="font-display text-[12.5px] font-semibold text-green-dark hover:text-navy"
+                            >
+                                En su pedido →
+                            </button>
+                        </div>
+                    ) : (
+                        <button
+                            type="button"
+                            onClick={() => carrito.agregar(producto, presentacion)}
+                            className="flex-1 rounded-lg bg-green py-2.5 text-center font-display text-[13px] font-semibold text-white hover:bg-green-dark"
+                        >
+                            Agregar al pedido
+                        </button>
+                    )}
                     <button
                         type="button"
                         onClick={onVerFicha}

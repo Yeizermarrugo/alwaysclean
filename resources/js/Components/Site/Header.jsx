@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import { Link, usePage } from '@inertiajs/react';
+import { carrito, useCarrito } from '@/lib/carrito';
+import { IconoPedido } from '@/Components/Site/PedidoDrawer';
 
 const NAV = [
     { label: 'Inicio', route: 'home' },
@@ -14,6 +16,7 @@ export default function Header({ showActions = true, compact = false }) {
     const { empresa } = usePage().props;
     const currentRoute = route().current();
     const [menuAbierto, setMenuAbierto] = useState(false);
+    const { unidades } = useCarrito();
 
     return (
         <div>
@@ -44,6 +47,19 @@ export default function Header({ showActions = true, compact = false }) {
                 </nav>
 
                 <div className="flex items-center gap-2.5">
+                    <button
+                        type="button"
+                        onClick={carrito.abrir}
+                        aria-label={unidades ? `Ver pedido (${unidades} unidades)` : 'Ver pedido'}
+                        className="relative grid h-9 w-9 place-items-center rounded-lg border border-mist-border text-navy hover:border-navy"
+                    >
+                        <IconoPedido className="h-[18px] w-[18px]" />
+                        {unidades > 0 && (
+                            <span className="absolute -right-1.5 -top-1.5 grid h-[18px] min-w-[18px] place-items-center rounded-full bg-green px-1 font-sans text-[10.5px] font-bold text-white">
+                                {unidades > 99 ? '99+' : unidades}
+                            </span>
+                        )}
+                    </button>
                     {showActions && (
                         <Link
                             href={route('contacto.create')}
