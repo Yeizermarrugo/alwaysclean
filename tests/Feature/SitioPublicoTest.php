@@ -79,4 +79,18 @@ class SitioPublicoTest extends TestCase
 
         $this->get('/_falla')->assertStatus(500)->assertInertia(fn ($page) => $page->component('Error')->where('status', 500));
     }
+
+    public function test_inicio_trae_preguntas_frecuentes_y_su_faqpage(): void
+    {
+        $respuesta = $this->get('/')->assertOk();
+
+        $respuesta->assertInertia(fn ($page) => $page->has('preguntas', count(\App\Support\PreguntasFrecuentes::LISTA)));
+        $this->assertStringContainsString('"@type":"FAQPage"', $respuesta->getContent());
+    }
+
+    public function test_fotos_estaticas_del_repositorio_no_pasan_por_storage(): void
+    {
+        $this->assertSame('/images/servicios/x.jpg', \App\Support\Uploads::url('/images/servicios/x.jpg'));
+        $this->assertSame('/storage/servicios/y.jpg', \App\Support\Uploads::url('servicios/y.jpg'));
+    }
 }

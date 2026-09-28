@@ -30,6 +30,7 @@
 
         @if (request()->routeIs('home'))
             <script type="application/ld+json">@json(\App\Support\Seo::negocioLocal(), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_HEX_TAG)</script>
+            <script type="application/ld+json">@json(\App\Support\PreguntasFrecuentes::datosEstructurados(), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_HEX_TAG)</script>
         @endif
 
         <meta name="theme-color" content="#0D0D5B">

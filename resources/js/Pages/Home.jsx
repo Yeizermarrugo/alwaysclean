@@ -3,6 +3,7 @@ import SiteLayout from '@/Layouts/SiteLayout';
 import ServiceCard from '@/Components/Site/ServiceCard';
 import ServiceRow from '@/Components/Site/ServiceRow';
 import ClientesCarousel from '@/Components/Site/ClientesCarousel';
+import PreguntasFrecuentes from '@/Components/Site/PreguntasFrecuentes';
 import { waLink } from '@/lib/whatsapp';
 
 const SEGMENTOS = [
@@ -23,7 +24,7 @@ const CATEGORIA_LABEL = {
     obras: 'Obras civiles y mantenimiento',
 };
 
-export default function Home({ destacados, todos, conteos, productos }) {
+export default function Home({ destacados, todos, conteos, productos, preguntas }) {
     const { empresa } = usePage().props;
     const totalServicios = todos.length;
 
@@ -186,10 +187,18 @@ export default function Home({ destacados, todos, conteos, productos }) {
                     ))}
                 </div>
 
-                <div className="mt-6 flex flex-col items-start gap-4 rounded-xl border border-green/30 bg-green-light px-6 py-5 sm:flex-row sm:items-center sm:justify-between">
-                    <div>
-                        <div className="font-display text-base font-bold text-navy">Bono de bienvenida 10%</div>
-                        <div className="text-[13px] text-navy-600">Oferta limitada · crédito fácil a 3 cuotas</div>
+                <div className="mt-6 flex flex-col items-start gap-4 overflow-hidden rounded-xl border border-green/30 bg-green-light px-6 py-5 sm:flex-row sm:items-center sm:justify-between sm:py-0 sm:pl-3">
+                    <div className="flex items-center gap-4">
+                        <img
+                            src="/images/bono-bienvenida.png"
+                            alt=""
+                            className="hidden h-[104px] w-auto self-end sm:block"
+                            loading="lazy"
+                        />
+                        <div>
+                            <div className="font-display text-base font-bold text-navy">Bono de bienvenida 10%</div>
+                            <div className="text-[13px] text-navy-600">Oferta limitada · crédito fácil a 3 cuotas</div>
+                        </div>
                     </div>
                     <a
                         href={waLink(empresa.whatsapp, 'Hola, quiero reclamar el bono de bienvenida del 10%.')}
@@ -201,6 +210,9 @@ export default function Home({ destacados, todos, conteos, productos }) {
                     </a>
                 </div>
             </div>
+
+            {/* Preguntas frecuentes y avales */}
+            <PreguntasFrecuentes preguntas={preguntas} />
 
             {/* Clientes que nos respaldan */}
             <div className="border-t border-mist-300 px-5 pt-10 lg:px-10">

@@ -98,6 +98,12 @@ Laravel + Inertia (React/JSX) + Tailwind. Sitio público (home, servicios, produ
 - Hosting compartido sin worker ni cron frecuente: `QUEUE_CONNECTION=deferred` (config/queue.php) envía los correos justo después de responder, sin reintentos. Con worker (Laravel Cloud) o cron cada minuto: `database`.
 - Plantilla de correo publicada solo en lo necesario: `resources/views/vendor/mail/html/{header,message}.blade.php` + `themes/default.css` (logo y colores). Textos de la plantilla de Laravel traducidos en `lang/es.json`.
 
+### Fotos reales y preguntas frecuentes (2026-09-28)
+- Fuente: carpeta de Drive "FOTOS PAGINA WEB" (descargada en `C:\Users\yemav\Downloads\FOTOS PAGINA WEB-20260917T215913Z-1-001`). Fotos nombradas por servicio + `PREGUNTAS FRECUENTES.docx`, logos DADIS/EPA, banner FENALCO, mascota del bono.
+- Servicios: portada `public/images/servicios/{slug}.jpg` y galería `galeria/{slug}-N.jpg` (versionadas, máx. 1600 px, **sin EXIF/GPS**). `ServicioSeeder::fotosReales()` las asigna. `Uploads::url()` deja pasar rutas que empiezan por `/` (estáticas) y `Uploads::delete()` nunca las borra.
+- Sin foto en la carpeta: embarcaciones y aires acondicionados. Fotos sin usar aptas para servicios del PDF aún no creados: trípode/espacio confinado, hidrante (redes de acueducto), zanja (obras civiles), termonebulización.
+- Preguntas frecuentes: `App\Support\PreguntasFrecuentes` (texto del .docx, solo tildes/puntuación) → sección en el inicio + JSON-LD FAQPage. "Avalados por" DADIS/EPA y "Afiliados a" FENALCO en `public/images/avales/`.
+
 ### Checklist al desplegar (Laravel Cloud)
 1. Variables: `APP_ENV=production`, `APP_DEBUG=false`, `TURNSTILE_SITE_KEY`/`TURNSTILE_SECRET_KEY` reales (las reales están comentadas en `.env` local; las `1x000…` son de prueba), `IP_DESDE_CLOUDFLARE=false` al inicio. `MAIL_FROM_ADDRESS` = buzón real que alguien lea (el correo pide "responda a este correo").
 2. Turnstile: agregar el dominio de producción (y el `*.laravel.cloud` si se prueba ahí) en los hostnames del widget "Always Clean - PQRS" (el mismo widget se usa en `/contacto`).

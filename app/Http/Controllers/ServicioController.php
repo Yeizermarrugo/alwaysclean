@@ -17,6 +17,7 @@ class ServicioController extends Controller
             'todos' => Servicio::activos()->orderBy('orden')->get(['id', 'codigo', 'slug', 'nombre', 'meta']),
             'conteos' => $this->conteosPorCategoria(),
             'productos' => Producto::orderBy('orden')->get(),
+            'preguntas' => \App\Support\PreguntasFrecuentes::LISTA,
         ]);
     }
 

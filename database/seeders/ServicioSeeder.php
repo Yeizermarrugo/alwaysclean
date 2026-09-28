@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\Servicio;
+use App\Models\ServicioImagen;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Str;
 
@@ -187,11 +188,37 @@ class ServicioSeeder extends Seeder
         ];
 
         foreach ($servicios as $i => $servicio) {
-            Servicio::create(array_merge($servicio, [
+            $modelo = Servicio::create(array_merge($servicio, [
                 'codigo' => str_pad((string) ($i + 1), 2, '0', STR_PAD_LEFT),
                 'slug' => Str::slug($servicio['nombre']),
                 'orden' => $i + 1,
             ]));
+
+            self::fotosReales($modelo);
+        }
+    }
+
+    /**
+     * Fotos reales de la empresa (carpeta "FOTOS PAGINA WEB" de Drive), optimizadas
+     * en public/images/servicios/{slug}.jpg y galeria/{slug}-N.jpg. Reemplazan la
+     * foto de referencia cuando existen.
+     */
+    public static function fotosReales(Servicio $servicio): void
+    {
+        $portada = "/images/servicios/{$servicio->slug}.jpg";
+
+        if (is_file(public_path($portada))) {
+            $servicio->update(['imagen' => $portada]);
+        }
+
+        $galeria = glob(public_path("images/servicios/galeria/{$servicio->slug}-*.jpg")) ?: [];
+        natsort($galeria);
+
+        foreach (array_values($galeria) as $orden => $archivo) {
+            ServicioImagen::firstOrCreate(
+                ['servicio_id' => $servicio->id, 'imagen' => '/images/servicios/galeria/'.basename($archivo)],
+                ['orden' => $orden],
+            );
         }
     }
 }
