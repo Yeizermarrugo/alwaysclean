@@ -310,7 +310,7 @@ export default function Contacto({ servicios, maps, inicio, turnstileSiteKey }) 
                         <iframe
                             title={`Mapa: ${empresa.direccion}, ${empresa.ciudad}`}
                             src={empresa.mapa.embed}
-                            className="block h-[200px] w-full"
+                            className="block h-[180px] w-full"
                             loading="lazy"
                             referrerPolicy="strict-origin-when-cross-origin"
                         />
