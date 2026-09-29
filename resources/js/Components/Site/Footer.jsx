@@ -27,7 +27,7 @@ export default function Footer() {
             </div>
             <div>
                 <div className="mb-2 font-display text-[12.5px] font-semibold text-white">Sede</div>
-                {empresa.ciudad.split(',')[0] ?? empresa.ciudad}<br />Bolívar, Colombia
+                {empresa.direccion}<br />{empresa.ciudad.split(',')[0] ?? empresa.ciudad}<br />Bolívar, Colombia
             </div>
         </footer>
     );

@@ -22,7 +22,7 @@
 <x-slot:footer>
 <x-mail::footer>
 {{ config('company.razon_social') }} · NIT {{ config('company.nit') }}<br>
-{{ config('company.ciudad') }} · {{ config('company.telefonos')[0] ?? '' }}
+{{ config('company.direccion') }}, {{ config('company.ciudad') }} · {{ config('company.telefonos')[0] ?? '' }}
 </x-mail::footer>
 </x-slot:footer>
 </x-mail::layout>

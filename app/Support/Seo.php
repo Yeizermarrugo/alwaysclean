@@ -98,6 +98,8 @@ class Seo
             'email' => $empresa['correos'][0] ?? null,
             'address' => [
                 '@type' => 'PostalAddress',
+                'streetAddress' => $empresa['direccion'],
+                'postalCode' => $empresa['codigo_postal'],
                 'addressLocality' => 'Cartagena de Indias',
                 'addressRegion' => 'Bolívar',
                 'addressCountry' => 'CO',

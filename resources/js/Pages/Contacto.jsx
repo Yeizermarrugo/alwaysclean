@@ -296,13 +296,20 @@ export default function Contacto({ servicios, maps, inicio, turnstileSiteKey }) 
                     </div>
                     <div>
                         <div className="mb-1.5 font-sans text-[11px] font-semibold tracking-[0.14em] text-ink-500">SEDE PRINCIPAL</div>
-                        <div className="text-sm text-navy-600">{empresa.ciudad}</div>
+                        <a
+                            href={`https://www.google.com/maps/search/?${new URLSearchParams({ api: '1', query: `${empresa.direccion}, ${empresa.ciudad}, Colombia` })}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="block text-sm text-navy-600 hover:text-green-dark"
+                        >
+                            {empresa.direccion}<br />{empresa.ciudad}
+                        </a>
                         <div className="mt-1 text-[12.5px] leading-relaxed text-ink-500">{empresa.horario}</div>
                     </div>
                     <div className="overflow-hidden rounded-[10px] border border-mist-300 bg-mist-100">
                         <iframe
-                            title={`Mapa de ${empresa.ciudad}`}
-                            src={`https://maps.google.com/maps?${new URLSearchParams({ q: empresa.ciudad, z: '12', hl: 'es', output: 'embed' })}`}
+                            title={`Mapa: ${empresa.direccion}, ${empresa.ciudad}`}
+                            src={`https://maps.google.com/maps?${new URLSearchParams({ q: `${empresa.direccion}, ${empresa.ciudad}, Colombia`, z: '15', hl: 'es', output: 'embed' })}`}
                             className="block h-[140px] w-full"
                             loading="lazy"
                             referrerPolicy="no-referrer-when-downgrade"
