@@ -11,6 +11,8 @@ return [
         'lat' => 10.3987737,
         'lng' => -75.4823627,
         'url' => 'https://maps.google.com/?cid=7554371075581356163',
+        // "Compartir > Insertar un mapa" de la ficha: muestra nombre, calificación y "Cómo llegar".
+        'embed' => 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d315.52692354426324!2d-75.48243849491762!3d10.398822724437409!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8ef6251fec0c1f95%3A0x68d68477ed832883!2sALWAYS%20CLEAN%20COLOMBIA%20SAS!5e1!3m2!1ses!2sus!4v1790641527494!5m2!1ses!2sus',
     ],
     'telefonos' => ['312 810 1340', '317 518 4188', '301 352 3510'],
     'whatsapp' => '573128101340',

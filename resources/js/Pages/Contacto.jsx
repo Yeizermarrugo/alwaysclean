@@ -309,10 +309,10 @@ export default function Contacto({ servicios, maps, inicio, turnstileSiteKey }) 
                     <div className="overflow-hidden rounded-[10px] border border-mist-300 bg-mist-100">
                         <iframe
                             title={`Mapa: ${empresa.direccion}, ${empresa.ciudad}`}
-                            src={`https://maps.google.com/maps?${new URLSearchParams({ q: `${empresa.mapa.lat},${empresa.mapa.lng}`, z: '16', hl: 'es', output: 'embed' })}`}
-                            className="block h-[140px] w-full"
+                            src={empresa.mapa.embed}
+                            className="block h-[200px] w-full"
                             loading="lazy"
-                            referrerPolicy="no-referrer-when-downgrade"
+                            referrerPolicy="strict-origin-when-cross-origin"
                         />
                     </div>
                 </div>
