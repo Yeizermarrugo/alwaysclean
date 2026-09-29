@@ -23,6 +23,12 @@ class Cotizacion extends Model
         'longitud' => 'float',
     ];
 
+    public const CANALES = [
+        'web' => 'Web',
+        'whatsapp' => 'WhatsApp',
+        'telefono' => 'Teléfono',
+    ];
+
     public const ESTADOS = [
         'nueva' => 'Nueva',
         'contactada' => 'Contactada',

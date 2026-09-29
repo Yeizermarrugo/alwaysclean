@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\CotizacionRecibida;
 use App\Models\Cotizacion;
 use App\Models\Servicio;
 use App\Rules\Turnstile;
@@ -10,6 +11,7 @@ use Illuminate\Contracts\Encryption\DecryptException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Crypt;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
@@ -30,7 +32,7 @@ class ContactoController extends Controller
     public function create(): Response
     {
         return Inertia::render('Contacto', [
-            'servicios' => Servicio::orderBy('orden')->get(['id', 'nombre', 'categoria']),
+            'servicios' => Servicio::activos()->orderBy('orden')->get(['id', 'nombre', 'categoria']),
             'maps' => [
                 'key' => config('services.google_maps.browser_key'),
                 'mapId' => config('services.google_maps.map_id'),
@@ -54,7 +56,8 @@ class ContactoController extends Controller
 
         $data = $request->validate([
             'servicios' => ['required', 'array', 'min:1', 'max:10'],
-            'servicios.*' => ['string', 'distinct', Rule::in(Servicio::pluck('nombre')->all())],
+            // Solo servicios visibles: uno oculto desde el panel ya no se puede cotizar.
+            'servicios.*' => ['string', 'distinct', Rule::in(Servicio::activos()->pluck('nombre')->all())],
             'empresa' => ['required', 'string', 'max:150'],
             'nit' => ['nullable', 'string', 'max:30'],
             'ciudad' => ['required', 'string', 'max:100'],
@@ -109,6 +112,11 @@ class ContactoController extends Controller
         Cache::put($claveDuplicado, $cotizacion->caso, now()->addDay());
         RateLimiter::hit($claveIp, 3600);
         RateLimiter::hit($claveTelefono, 86400);
+
+        // Aviso al equipo (en cola: si el correo falla, el cliente igual sigue a WhatsApp).
+        if ($destinatarios = config('notificaciones.cotizaciones')) {
+            Mail::to($destinatarios)->queue(new CotizacionRecibida($cotizacion));
+        }
 
         return $this->irAWhatsApp($cotizacion);
     }

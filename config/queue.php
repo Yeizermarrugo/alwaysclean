@@ -34,6 +34,13 @@ return [
             'driver' => 'sync',
         ],
 
+        // Hosting compartido sin worker: el trabajo corre justo después de enviar
+        // la respuesta al visitante (no lo hace esperar). Sin reintentos: si
+        // Resend falla, el error queda en el log.
+        'deferred' => [
+            'driver' => 'deferred',
+        ],
+
         'database' => [
             'driver' => 'database',
             'connection' => env('DB_QUEUE_CONNECTION'),

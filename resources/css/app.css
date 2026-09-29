@@ -18,6 +18,10 @@ html {
     .h-pantalla {
         height: calc(100dvh / var(--zoom));
     }
+
+    .min-h-pantalla {
+        min-height: calc(100dvh / var(--zoom));
+    }
 }
 
 body {

@@ -166,6 +166,7 @@ export default function PedidoDrawer() {
                                         target="_blank"
                                         rel="noopener noreferrer"
                                         onClick={() => setEnviado(true)}
+                                        data-evento="Pedido de productos"
                                         className="flex w-full items-center justify-center gap-2 rounded-lg bg-green py-3.5 font-display text-[14.5px] font-semibold text-white hover:bg-green-dark"
                                     >
                                         <IconoWhatsApp className="h-5 w-5" />

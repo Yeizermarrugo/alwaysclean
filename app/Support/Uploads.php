@@ -24,7 +24,8 @@ class Uploads
             return null;
         }
 
-        if (Str::startsWith($path, ['http://', 'https://'])) {
+        // URL externa o archivo estático del repositorio (public/images/...).
+        if (Str::startsWith($path, ['http://', 'https://', '/'])) {
             return $path;
         }
 
@@ -38,7 +39,8 @@ class Uploads
      */
     public static function delete(?string $path): void
     {
-        if ($path && ! Str::startsWith($path, ['http://', 'https://'])) {
+        // Nunca borra URLs externas ni archivos estáticos del repositorio.
+        if ($path && ! Str::startsWith($path, ['http://', 'https://', '/'])) {
             self::disk()->delete($path);
         }
     }

@@ -30,7 +30,15 @@ export default function ServicioShow({ servicio }) {
     const [capacidad, setCapacidad] = useState('');
     const [whatsappCliente, setWhatsappCliente] = useState('');
 
-    const galeria = servicio.imagenes ?? [];
+    const [activa, setActiva] = useState(0);
+
+    // La portada (la foto de la tarjeta en /servicios) va primero; luego la galería.
+    const fotos = [
+        ...(servicio.imagen_url ? [{ id: 'portada', imagen_url: servicio.imagen_url }] : []),
+        ...(servicio.imagenes ?? []).filter((img) => img.imagen_url !== servicio.imagen_url),
+    ];
+    const actual = fotos[activa] ?? fotos[0];
+    const mover = (paso) => setActiva((i) => (i + paso + fotos.length) % fotos.length);
 
     const mensaje = [
         `Hola, quiero cotizar "${servicio.nombre}".`,
@@ -52,24 +60,37 @@ export default function ServicioShow({ servicio }) {
                     </h1>
                     <p className="mb-5 text-[15.5px] leading-relaxed text-navy-600 text-pretty">{servicio.descripcion}</p>
 
-                    {galeria.length > 0 ? (
-                        <button type="button" onClick={() => setLightboxIndex(0)} className="mb-3.5 block aspect-[4/3] w-full lg:aspect-[16/10]">
-                            <img src={galeria[0].imagen_url} alt={servicio.nombre} className="h-full w-full rounded-xl object-cover object-top" />
-                        </button>
-                    ) : servicio.imagen_url ? (
-                        <img src={servicio.imagen_url} alt={servicio.nombre} className="mb-3.5 aspect-[4/3] w-full rounded-xl object-cover object-top lg:aspect-[16/10]" />
+                    {actual ? (
+                        <div className="group relative mb-3.5 aspect-[4/3] w-full overflow-hidden rounded-xl bg-mist-100 lg:aspect-[16/10]">
+                            <button type="button" onClick={() => setLightboxIndex(activa)} className="block h-full w-full" aria-label="Ver foto en grande">
+                                <img key={actual.imagen_url} src={actual.imagen_url} alt={servicio.nombre} className="h-full w-full object-cover" />
+                            </button>
+                            {fotos.length > 1 && (
+                                <>
+                                    <FlechaFoto lado="izquierda" onClick={() => mover(-1)} />
+                                    <FlechaFoto lado="derecha" onClick={() => mover(1)} />
+                                    <span className="pointer-events-none absolute bottom-3 right-3 rounded-full bg-navy-deep/70 px-2.5 py-1 font-sans text-[11.5px] font-semibold text-white">
+                                        {activa + 1} / {fotos.length}
+                                    </span>
+                                </>
+                            )}
+                        </div>
                     ) : (
                         <PlaceholderPhoto hint={servicio.imagen_hint} className="mb-3.5 aspect-[4/3] rounded-xl p-3.5 lg:aspect-[16/10]" />
                     )}
 
-                    {galeria.length > 0 && (
+                    {fotos.length > 1 && (
                         <div className="mb-6 flex flex-wrap gap-2.5">
-                            {galeria.map((img, i) => (
+                            {fotos.map((img, i) => (
                                 <button
                                     key={img.id}
                                     type="button"
-                                    onClick={() => setLightboxIndex(i)}
-                                    className="h-[58px] w-[78px] overflow-hidden rounded-[7px] border border-mist-300"
+                                    onClick={() => setActiva(i)}
+                                    aria-label={`Foto ${i + 1}`}
+                                    aria-current={i === activa}
+                                    className={`h-[58px] w-[78px] overflow-hidden rounded-[7px] border-2 transition-opacity ${
+                                        i === activa ? 'border-green' : 'border-transparent opacity-70 hover:opacity-100'
+                                    }`}
                                 >
                                     <img src={img.imagen_url} alt="" className="h-full w-full object-cover" />
                                 </button>
@@ -77,7 +98,15 @@ export default function ServicioShow({ servicio }) {
                         </div>
                     )}
 
-                    <Lightbox imagenes={galeria} index={lightboxIndex} onClose={() => setLightboxIndex(null)} onChange={setLightboxIndex} />
+                    <Lightbox
+                        imagenes={fotos}
+                        index={lightboxIndex}
+                        onClose={() => setLightboxIndex(null)}
+                        onChange={(i) => {
+                            setLightboxIndex(i);
+                            if (i !== null) setActiva(i);
+                        }}
+                    />
 
                     <div className="mb-4.5 flex gap-6 border-b border-mist-300 font-display text-[13.5px] font-semibold text-ink-500">
                         {TABS.map((t, i) => (
@@ -185,5 +214,21 @@ export default function ServicioShow({ servicio }) {
                 </div>
             </div>
         </SiteLayout>
+    );
+}
+
+function FlechaFoto({ lado, onClick }) {
+    const izquierda = lado === 'izquierda';
+    return (
+        <button
+            type="button"
+            onClick={onClick}
+            aria-label={izquierda ? 'Foto anterior' : 'Foto siguiente'}
+            className={`absolute top-1/2 grid h-10 w-10 -translate-y-1/2 place-items-center rounded-full bg-white/90 text-[18px] font-bold text-navy shadow-md transition-opacity hover:bg-white sm:opacity-0 sm:group-hover:opacity-100 ${
+                izquierda ? 'left-3' : 'right-3'
+            }`}
+        >
+            {izquierda ? '‹' : '›'}
+        </button>
     );
 }

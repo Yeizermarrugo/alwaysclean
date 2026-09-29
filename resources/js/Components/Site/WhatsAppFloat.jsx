@@ -29,7 +29,7 @@ export default function WhatsAppFloat({ mensaje = 'Hola, quiero información sob
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="Escríbanos por WhatsApp"
-                className="wa-float group fixed bottom-5 right-5 z-50 flex items-center gap-3 sm:bottom-7 sm:right-7"
+                className="wa-float group fixed bottom-5 right-5 z-40 flex items-center gap-3 sm:bottom-7 sm:right-7"
                 style={{ marginBottom: 'env(safe-area-inset-bottom)' }}
             >
                 <span className="pointer-events-none hidden translate-x-2 rounded-full bg-white px-4 py-2 font-display text-[13px] font-semibold text-navy opacity-0 shadow-[0_8px_24px_-6px_rgba(15,23,42,0.25)] ring-1 ring-black/5 transition-all duration-300 group-hover:translate-x-0 group-hover:opacity-100 group-focus-visible:translate-x-0 group-focus-visible:opacity-100 sm:block">

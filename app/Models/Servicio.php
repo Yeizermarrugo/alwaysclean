@@ -21,6 +21,13 @@ class Servicio extends Model
         'activo' => 'boolean',
     ];
 
+    /** Tiene los textos mínimos para mostrarse en el sitio público. */
+    public function estaCompleto(): bool
+    {
+        return filled($this->resumen) && filled($this->descripcion) && filled($this->meta)
+            && ! empty($this->incluye) && ! empty($this->sectores);
+    }
+
     public const CATEGORIAS = [
         'limpieza' => 'Limpieza',
         'sanitarios' => 'Sanitarios y ambientales',

@@ -1,9 +1,9 @@
 import { useRef, useState } from 'react';
 import { useForm, usePage } from '@inertiajs/react';
 import SiteLayout from '@/Layouts/SiteLayout';
-import PlaceholderPhoto from '@/Components/Site/PlaceholderPhoto';
 import UbicacionPicker from '@/Components/Site/UbicacionPicker';
 import TurnstileWidget from '@/Components/Site/TurnstileWidget';
+import { medir } from '@/lib/analitica';
 
 const PASOS = ['SERVICIO', 'SU SEDE', 'CONTACTO'];
 const FRECUENCIAS = [
@@ -58,20 +58,26 @@ export default function Contacto({ servicios, maps, inicio, turnstileSiteKey }) 
 
     const submit = (e) => {
         e.preventDefault();
+        let conError = false;
         post(route('contacto.store'), {
             // Si el error es de un paso anterior, volver a ese paso para que se vea.
             onError: (errs) => {
+                conError = true;
                 if (Object.keys(errs).some((k) => k.startsWith('servicios'))) setPaso(0);
                 else if (CAMPOS_SEDE.some((c) => errs[c])) setPaso(1);
             },
-            // El token de Turnstile es de un solo uso.
-            onFinish: () => turnstile.current?.reset(),
+            onFinish: () => {
+                // Sin errores el servidor redirige a WhatsApp: la cotización quedó registrada.
+                if (!conError) medir('Cotización enviada', { servicios: data.servicios.length });
+                // El token de Turnstile es de un solo uso.
+                turnstile.current?.reset();
+            },
         });
     };
 
     return (
         <SiteLayout title="Solicite su cotización">
-            <div className="grid lg:grid-cols-[1.25fr_.75fr]">
+            <div className="grid flex-1 lg:grid-cols-[1.25fr_.75fr]">
                 <div className="border-b border-mist-300 px-5 py-8 lg:border-b-0 lg:border-r lg:px-10 lg:py-9">
                     <h1 className="mb-1.5 font-display text-[28px] font-extrabold tracking-tight text-navy lg:text-[34px]">
                         Solicite su cotización
@@ -271,23 +277,44 @@ export default function Contacto({ servicios, maps, inicio, turnstileSiteKey }) 
                     </form>
                 </div>
 
-                <div className="flex flex-col gap-5 bg-mist-50 px-5 py-8 lg:px-6 lg:py-8">
+                <div className="flex flex-col gap-4 bg-mist-50 px-5 py-8 lg:px-6 lg:py-7">
                     <div>
-                        <div className="mb-2 font-sans text-[11px] font-semibold tracking-[0.14em] text-ink-500">ATENCIÓN DIRECTA</div>
-                        <div className="font-display text-2xl font-extrabold leading-relaxed text-navy">
-                            {empresa.telefonos.map((t) => <span key={t}>{t}<br /></span>)}
+                        <div className="mb-1.5 font-sans text-[11px] font-semibold tracking-[0.14em] text-ink-500">ATENCIÓN DIRECTA</div>
+                        <div className="flex flex-col font-display text-[19px] font-extrabold leading-snug text-navy">
+                            {empresa.telefonos.map((t) => (
+                                <a key={t} href={`tel:+57${t.replace(/\D/g, '')}`} className="hover:text-green-dark">{t}</a>
+                            ))}
                         </div>
                     </div>
                     <div>
-                        <div className="mb-2 font-sans text-[11px] font-semibold tracking-[0.14em] text-ink-500">CORREO</div>
-                        <div className="text-sm text-navy-600">{empresa.correos.map((c) => <span key={c}>{c}<br /></span>)}</div>
+                        <div className="mb-1.5 font-sans text-[11px] font-semibold tracking-[0.14em] text-ink-500">CORREO</div>
+                        <div className="flex flex-col text-sm text-navy-600">
+                            {empresa.correos.map((c) => (
+                                <a key={c} href={`mailto:${c}`} className="hover:text-green-dark">{c}</a>
+                            ))}
+                        </div>
                     </div>
                     <div>
-                        <div className="mb-2 font-sans text-[11px] font-semibold tracking-[0.14em] text-ink-500">SEDE PRINCIPAL</div>
-                        <div className="text-sm text-navy-600">{empresa.ciudad}</div>
+                        <div className="mb-1.5 font-sans text-[11px] font-semibold tracking-[0.14em] text-ink-500">SEDE PRINCIPAL</div>
+                        <a
+                            href={empresa.mapa.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="block text-sm text-navy-600 hover:text-green-dark"
+                        >
+                            {empresa.direccion}<br />{empresa.ciudad}
+                        </a>
+                        <div className="mt-1 text-[12.5px] leading-relaxed text-ink-500">{empresa.horario}</div>
                     </div>
-                    <PlaceholderPhoto hint="mapa: zona de cobertura" className="h-[150px] rounded-[10px] p-2.5" />
-                    <div className="text-[12.5px] leading-relaxed text-ink-500">{empresa.horario}</div>
+                    <div className="overflow-hidden rounded-[10px] border border-mist-300 bg-mist-100">
+                        <iframe
+                            title={`Mapa: ${empresa.direccion}, ${empresa.ciudad}`}
+                            src={empresa.mapa.embed}
+                            className="block h-[180px] w-full"
+                            loading="lazy"
+                            referrerPolicy="strict-origin-when-cross-origin"
+                        />
+                    </div>
                 </div>
             </div>
         </SiteLayout>

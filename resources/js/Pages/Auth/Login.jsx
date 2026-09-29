@@ -8,7 +8,7 @@ const MODULOS = [
 ];
 
 export default function Login() {
-    const { empresa } = usePage().props;
+    const { empresa, flash } = usePage().props;
     const [verPassword, setVerPassword] = useState(false);
     const { data, setData, post, processing, errors } = useForm({
         email: '',
@@ -88,6 +88,12 @@ export default function Login() {
                         Ingrese con su cuenta para gestionar cotizaciones, PQRS y el catálogo.
                     </p>
 
+                    {flash?.status && (
+                        <div className="mb-5 rounded-[10px] border border-green/40 bg-green-light px-4 py-3 text-[13.5px] font-medium text-green-dark">
+                            {flash.status}
+                        </div>
+                    )}
+
                     <form onSubmit={submit} className="flex flex-col gap-4">
                         <div>
                             <label htmlFor="email" className="mb-1.5 block text-[13px] font-medium text-navy-600">
@@ -131,15 +137,20 @@ export default function Login() {
                             {errors.password && <p className="mt-1.5 text-xs text-alert">{errors.password}</p>}
                         </div>
 
-                        <label className="flex items-center gap-2.5 text-[13.5px] text-navy-600">
-                            <input
-                                type="checkbox"
-                                checked={data.remember}
-                                onChange={(e) => setData('remember', e.target.checked)}
-                                className="h-4 w-4 rounded border-mist-border text-green focus:ring-green"
-                            />
-                            Mantener la sesión iniciada
-                        </label>
+                        <div className="flex flex-wrap items-center justify-between gap-2">
+                            <label className="flex items-center gap-2.5 text-[13.5px] text-navy-600">
+                                <input
+                                    type="checkbox"
+                                    checked={data.remember}
+                                    onChange={(e) => setData('remember', e.target.checked)}
+                                    className="h-4 w-4 rounded border-mist-border text-green focus:ring-green"
+                                />
+                                Mantener la sesión iniciada
+                            </label>
+                            <Link href={route('interno.password.request')} className="text-[13px] font-semibold text-navy-600 hover:text-green-dark">
+                                ¿Olvidó su contraseña?
+                            </Link>
+                        </div>
 
                         <button
                             type="submit"
