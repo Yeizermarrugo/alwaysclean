@@ -77,7 +77,7 @@ export default function Contacto({ servicios, maps, inicio, turnstileSiteKey }) 
 
     return (
         <SiteLayout title="Solicite su cotización">
-            <div className="grid lg:grid-cols-[1.25fr_.75fr]">
+            <div className="grid flex-1 lg:grid-cols-[1.25fr_.75fr]">
                 <div className="border-b border-mist-300 px-5 py-8 lg:border-b-0 lg:border-r lg:px-10 lg:py-9">
                     <h1 className="mb-1.5 font-display text-[28px] font-extrabold tracking-tight text-navy lg:text-[34px]">
                         Solicite su cotización
@@ -277,31 +277,37 @@ export default function Contacto({ servicios, maps, inicio, turnstileSiteKey }) 
                     </form>
                 </div>
 
-                <div className="flex flex-col gap-5 bg-mist-50 px-5 py-8 lg:px-6 lg:py-8">
+                <div className="flex flex-col gap-4 bg-mist-50 px-5 py-8 lg:px-6 lg:py-7">
                     <div>
-                        <div className="mb-2 font-sans text-[11px] font-semibold tracking-[0.14em] text-ink-500">ATENCIÓN DIRECTA</div>
-                        <div className="font-display text-2xl font-extrabold leading-relaxed text-navy">
-                            {empresa.telefonos.map((t) => <span key={t}>{t}<br /></span>)}
+                        <div className="mb-1.5 font-sans text-[11px] font-semibold tracking-[0.14em] text-ink-500">ATENCIÓN DIRECTA</div>
+                        <div className="flex flex-col font-display text-[19px] font-extrabold leading-snug text-navy">
+                            {empresa.telefonos.map((t) => (
+                                <a key={t} href={`tel:+57${t.replace(/\D/g, '')}`} className="hover:text-green-dark">{t}</a>
+                            ))}
                         </div>
                     </div>
                     <div>
-                        <div className="mb-2 font-sans text-[11px] font-semibold tracking-[0.14em] text-ink-500">CORREO</div>
-                        <div className="text-sm text-navy-600">{empresa.correos.map((c) => <span key={c}>{c}<br /></span>)}</div>
+                        <div className="mb-1.5 font-sans text-[11px] font-semibold tracking-[0.14em] text-ink-500">CORREO</div>
+                        <div className="flex flex-col text-sm text-navy-600">
+                            {empresa.correos.map((c) => (
+                                <a key={c} href={`mailto:${c}`} className="hover:text-green-dark">{c}</a>
+                            ))}
+                        </div>
                     </div>
                     <div>
-                        <div className="mb-2 font-sans text-[11px] font-semibold tracking-[0.14em] text-ink-500">SEDE PRINCIPAL</div>
+                        <div className="mb-1.5 font-sans text-[11px] font-semibold tracking-[0.14em] text-ink-500">SEDE PRINCIPAL</div>
                         <div className="text-sm text-navy-600">{empresa.ciudad}</div>
+                        <div className="mt-1 text-[12.5px] leading-relaxed text-ink-500">{empresa.horario}</div>
                     </div>
                     <div className="overflow-hidden rounded-[10px] border border-mist-300 bg-mist-100">
                         <iframe
                             title={`Mapa de ${empresa.ciudad}`}
                             src={`https://maps.google.com/maps?${new URLSearchParams({ q: empresa.ciudad, z: '12', hl: 'es', output: 'embed' })}`}
-                            className="block h-[180px] w-full"
+                            className="block h-[140px] w-full"
                             loading="lazy"
                             referrerPolicy="no-referrer-when-downgrade"
                         />
                     </div>
-                    <div className="text-[12.5px] leading-relaxed text-ink-500">{empresa.horario}</div>
                 </div>
             </div>
         </SiteLayout>

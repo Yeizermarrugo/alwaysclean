@@ -8,9 +8,9 @@ export default function SiteLayout({ title, showActions = true, compact = false,
     return (
         <>
             <Head title={title} />
-            <div className="flex min-h-screen flex-col bg-white">
+            <div className="flex min-h-pantalla flex-col bg-white">
                 <Header showActions={showActions} compact={compact} />
-                <main className="flex-1">{children}</main>
+                <main className="flex flex-1 flex-col">{children}</main>
                 <Footer />
                 <WhatsAppFloat />
                 <PedidoDrawer />
