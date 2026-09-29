@@ -99,11 +99,12 @@ class Seo
             'address' => [
                 '@type' => 'PostalAddress',
                 'streetAddress' => $empresa['direccion'],
-                'postalCode' => $empresa['codigo_postal'],
                 'addressLocality' => 'Cartagena de Indias',
                 'addressRegion' => 'Bolívar',
                 'addressCountry' => 'CO',
             ],
+            'geo' => ['@type' => 'GeoCoordinates', 'latitude' => $empresa['mapa']['lat'], 'longitude' => $empresa['mapa']['lng']],
+            'hasMap' => $empresa['mapa']['url'],
             'areaServed' => 'Cartagena de Indias',
             'openingHours' => 'Mo-Sa 07:00-18:00',
         ]);
