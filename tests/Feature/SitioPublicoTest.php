@@ -28,7 +28,10 @@ class SitioPublicoTest extends TestCase
         $this->assertStringContainsString('<meta name="description" content="Limpieza, desinfección', $html);
         $this->assertStringContainsString('<meta property="og:image" content="'.asset('images/og-default.jpg').'">', $html);
         $this->assertStringContainsString('"@type":"LocalBusiness"', $html);
-        $this->assertStringNotContainsString('name="robots" content="noindex"', $html);
+        // Fuera de producción todo va con noindex; en producción el inicio se indexa.
+        $this->assertStringContainsString('name="robots" content="noindex"', $html);
+        $this->app['env'] = 'production';
+        $this->assertStringNotContainsString('name="robots" content="noindex"', $this->get('/')->getContent());
     }
 
     public function test_ficha_de_servicio_usa_su_nombre_resumen_e_imagen(): void
@@ -62,6 +65,10 @@ class SitioPublicoTest extends TestCase
 
         $this->app['env'] = 'production';
         $this->get('/robots.txt')->assertSee('Sitemap: '.route('seo.sitemap'), false)->assertDontSee("Disallow: /\n", false);
+
+        // Dominio de pruebas de Laravel Cloud: nunca se indexa, aunque sea producción.
+        $this->get('http://alwaysclean.laravel.cloud/robots.txt')->assertSee("Disallow: /\n", false);
+        $this->assertStringContainsString('name="robots" content="noindex"', $this->get('http://alwaysclean.laravel.cloud/')->getContent());
     }
 
     public function test_pagina_404_con_la_marca_y_sin_indexar(): void

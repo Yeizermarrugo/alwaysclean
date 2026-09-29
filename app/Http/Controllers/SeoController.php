@@ -31,8 +31,8 @@ class SeoController extends Controller
 
     public function robots(): Response
     {
-        // Fuera de producción (Laravel Cloud *.laravel.cloud, pruebas) no se indexa nada.
-        $texto = app()->isProduction()
+        // Fuera de producción o en el dominio de pruebas *.laravel.cloud no se indexa nada.
+        $texto = \App\Support\Seo::dominioIndexable()
             ? "User-agent: *\nDisallow:\n\nSitemap: ".route('seo.sitemap')."\n"
             : "User-agent: *\nDisallow: /\n";
 

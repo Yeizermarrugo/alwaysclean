@@ -20,6 +20,25 @@ class CorreosTest extends TestCase
 {
     use DatosCotizacion, RefreshDatabase;
 
+    // Contraseñas generadas en cada test (no literales en el código: los
+    // escáneres de secretos como GitGuardian las marcan aunque sean de prueba).
+    private string $claveActual;
+    private string $claveNueva;
+    private string $claveOtra;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $this->claveActual = self::claveDePrueba();
+        $this->claveNueva = self::claveDePrueba();
+        $this->claveOtra = self::claveDePrueba();
+    }
+
+    private static function claveDePrueba(): string
+    {
+        return 'T'.\Illuminate\Support\Str::random(14).'7';
+    }
+
     // --- Aviso de cotización nueva ---------------------------------------
 
     public function test_cotizacion_nueva_avisa_al_equipo(): void
@@ -85,16 +104,16 @@ class CorreosTest extends TestCase
 
         $this->post('/interno/restablecer', [
             'token' => $token, 'email' => 'ana@alwaysclean.test',
-            'password' => 'nueva-clave-2026', 'password_confirmation' => 'nueva-clave-2026',
+            'password' => $this->claveNueva, 'password_confirmation' => $this->claveNueva,
         ])->assertRedirect(route('login'))->assertSessionHas('status');
 
-        $this->assertTrue(Hash::check('nueva-clave-2026', $ana->fresh()->password));
+        $this->assertTrue(Hash::check($this->claveNueva, $ana->fresh()->password));
         Notification::assertSentTo($ana, ContrasenaCambiada::class);
 
         // El token es de un solo uso.
         $this->post('/interno/restablecer', [
             'token' => $token, 'email' => 'ana@alwaysclean.test',
-            'password' => 'otra-clave-2026', 'password_confirmation' => 'otra-clave-2026',
+            'password' => $this->claveOtra, 'password_confirmation' => $this->claveOtra,
         ])->assertSessionHasErrors(['email' => 'El enlace no es válido o ya venció. Solicite uno nuevo.']);
     }
 
@@ -122,28 +141,53 @@ class CorreosTest extends TestCase
     public function test_cambia_contrasena_desde_mi_cuenta(): void
     {
         Notification::fake();
-        $ana = User::factory()->create(['password' => bcrypt('clave-actual-1')]);
+        $ana = User::factory()->create(['password' => bcrypt($this->claveActual)]);
         $tokenRecordar = $ana->remember_token;
 
         $this->actingAs($ana)->put('/interno/cuenta/contrasena', [
-            'contrasena_actual' => 'clave-actual-1',
-            'password' => 'clave-nueva-2026', 'password_confirmation' => 'clave-nueva-2026',
+            'contrasena_actual' => $this->claveActual,
+            'password' => $this->claveNueva, 'password_confirmation' => $this->claveNueva,
         ])->assertSessionHasNoErrors()->assertSessionHas('status');
 
-        $this->assertTrue(Hash::check('clave-nueva-2026', $ana->fresh()->password));
+        $this->assertTrue(Hash::check($this->claveNueva, $ana->fresh()->password));
         $this->assertNotSame($tokenRecordar, $ana->fresh()->remember_token);
         Notification::assertSentTo($ana, ContrasenaCambiada::class);
     }
 
     public function test_exige_la_contrasena_actual_correcta(): void
     {
-        $ana = User::factory()->create(['password' => bcrypt('clave-actual-1')]);
+        $ana = User::factory()->create(['password' => bcrypt($this->claveActual)]);
 
         $this->actingAs($ana)->put('/interno/cuenta/contrasena', [
             'contrasena_actual' => 'equivocada',
-            'password' => 'clave-nueva-2026', 'password_confirmation' => 'clave-nueva-2026',
+            'password' => $this->claveNueva, 'password_confirmation' => $this->claveNueva,
         ])->assertSessionHasErrors(['contrasena_actual' => 'La contraseña actual no es correcta.']);
 
-        $this->assertTrue(Hash::check('clave-actual-1', $ana->fresh()->password));
+        $this->assertTrue(Hash::check($this->claveActual, $ana->fresh()->password));
+    }
+
+    // --- Comando panel:usuario -------------------------------------------
+
+    public function test_comando_crea_usuario_y_envia_enlace(): void
+    {
+        Notification::fake();
+
+        $this->artisan('panel:usuario', ['email' => 'Nueva@AlwaysClean.test', '--nombre' => 'Nueva'])->assertSuccessful();
+
+        $usuario = User::firstWhere('email', 'nueva@alwaysclean.test');
+        $this->assertSame('Nueva', $usuario->name);
+        Notification::assertSentTo($usuario, RestablecerContrasena::class);
+    }
+
+    public function test_comando_con_mostrar_no_envia_correo(): void
+    {
+        Notification::fake();
+
+        $this->artisan('panel:usuario', ['email' => 'otra@alwaysclean.test', '--mostrar' => true])
+            ->expectsOutputToContain('Contraseña temporal')
+            ->assertSuccessful();
+
+        Notification::assertNothingSent();
+        $this->assertSame(1, User::count());
     }
 }

@@ -75,8 +75,17 @@ class Seo
             // URL canónica sin parámetros de búsqueda (filtros, utm…).
             'url' => url()->current(),
             // Solo se indexan las páginas públicas conocidas.
-            'indexar' => $datos !== null,
+            'indexar' => $datos !== null && self::dominioIndexable(),
         ];
+    }
+
+    /**
+     * Solo se indexa en producción y en el dominio propio: el de pruebas de
+     * Laravel Cloud (*.laravel.cloud) no debe aparecer en Google como copia.
+     */
+    public static function dominioIndexable(): bool
+    {
+        return app()->isProduction() && ! str_ends_with(request()->getHost(), '.laravel.cloud');
     }
 
     /** Datos estructurados schema.org para Google (ficha de negocio local). */

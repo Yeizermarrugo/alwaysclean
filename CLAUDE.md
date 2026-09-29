@@ -105,6 +105,15 @@ Laravel + Inertia (React/JSX) + Tailwind. Sitio público (home, servicios, produ
 - 9 servicios de la pág. 05 del PDF creados **ocultos y sin textos** (`ServicioSeeder::PENDIENTES_DEL_PORTAFOLIO`, idempotente). La empresa los completa en el panel; `toggleActivo` no deja activar uno incompleto (`Servicio::estaCompleto()`), y la lista muestra "Por completar". Alquiler de equipos quedó en `obras` porque no existe la categoría "Renta de equipos".
 - Preguntas frecuentes: `App\Support\PreguntasFrecuentes` (texto del .docx, solo tildes/puntuación) → sección en el inicio + JSON-LD FAQPage. "Avalados por" DADIS/EPA y "Afiliados a" FENALCO en `public/images/avales/`.
 
+### Estado al 2026-09-28 (listo para desplegar)
+- **Guía de despliegue completa: `docs/DESPLIEGUE.md`** (Resend, variables, datos iniciales, verificación, dominio). Primero en la URL `*.laravel.cloud` para que el cliente revise; el dominio se conecta después (hoy apunta al WordPress anterior).
+- Decisiones: Laravel Cloud Starter (latinoamericahosting descartado: H1 sin SSH, E1 caro). `QUEUE_CONNECTION=deferred` (sin worker = sin costo extra). Resend para correo.
+- `*.laravel.cloud` nunca se indexa (`Seo::dominioIndexable()`), aunque sea producción.
+- Usuarios del panel en producción: `php artisan panel:usuario correo --nombre="…"` (envía enlace para crear contraseña; `--mostrar` imprime una temporal). **No** `php artisan db:seed` a secas.
+- Dirección real: Transversal 71, Calle 31I # 11, Los Alpes (`config/company.php`, con coordenadas, enlace y mapa insertable de la ficha de Google). La ficha de Google tiene dos direcciones pegadas: pendiente que la empresa la corrija.
+- Tests: nunca contraseñas literales (GitGuardian las marca en el PR); generar con `Str::random`.
+- Pendientes con el cliente: ver `TODO.md` §5.
+
 ### Checklist al desplegar (Laravel Cloud)
 1. Variables: `APP_ENV=production`, `APP_DEBUG=false`, `TURNSTILE_SITE_KEY`/`TURNSTILE_SECRET_KEY` reales (las reales están comentadas en `.env` local; las `1x000…` son de prueba), `IP_DESDE_CLOUDFLARE=false` al inicio. `MAIL_FROM_ADDRESS` = buzón real que alguien lea (el correo pide "responda a este correo").
 2. Turnstile: agregar el dominio de producción (y el `*.laravel.cloud` si se prueba ahí) en los hostnames del widget "Always Clean - PQRS" (el mismo widget se usa en `/contacto`).

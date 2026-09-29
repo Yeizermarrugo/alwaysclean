@@ -1,6 +1,6 @@
 # TODO — Always Clean Colombia
 
-Última actualización: 2026-09-23. Decisión de despliegue: **Laravel Cloud, plan Starter** (misma organización que `dilodepartededios.com`).
+Última actualización: 2026-09-28. Guía de despliegue paso a paso: `docs/DESPLIEGUE.md`. Decisión de despliegue: **Laravel Cloud, plan Starter** (misma organización que `dilodepartededios.com`).
 
 ## 1. Seguridad — formulario PQRS (público, `POST /pqrs`)
 
@@ -15,7 +15,7 @@ Hoy no tiene throttle, captcha ni honeypot, y envía un correo desde el dominio 
 - [x] **Checkbox de consentimiento** de tratamiento de datos (Ley 1581 / Habeas Data), enlazado a `/politicas`. Guardar fecha/aceptación.
 - [x] **Botón del correo** (quitado; el seguimiento es por correo): dice "Ver estado de PQRS" pero enlaza a `/pqrs`, que no muestra estados. Cambiar o quitar.
 - [ ] **Texto legal de datos personales**: el checkbox enlaza a `/politicas`, que es la política integral (PO-SGI-001), no una política de tratamiento de datos (Ley 1581). Falta redactarla/publicarla y apuntar el enlace ahí.
-- [ ] **Correo real en producción**: hoy `MAIL_MAILER=log`. Usar Resend/Brevo/Postmark/SES + SPF, DKIM y DMARC en el dominio. Definir `MAIL_FROM_ADDRESS` real (hoy `hello@example.com`).
+- [~] **Correo real en producción**: código listo con Resend (`MAIL_MAILER=resend`). Falta crear la cuenta, verificar el dominio (DKIM/SPF/DMARC) y poner `RESEND_KEY` — pasos en `docs/DESPLIEGUE.md`.
 
 ## 2. Seguridad — BD y panel interno
 
@@ -30,7 +30,8 @@ Hoy no tiene throttle, captcha ni honeypot, y envía un correo desde el dominio 
 - [~] **Cifrar `documento` y `telefono`** con cast `'encrypted'` en `PqrsCaso` + migración/comando que cifre las filas existentes. Ojo: no se podrá buscar por esos campos; **guardar `APP_KEY` en un gestor de contraseñas** (perderla = perder esos datos). — *Descartado por ahora (decisión 2026-09-23).*
 - [~] **Política de retención**: borrar/anonimizar casos cerrados tras un plazo (definir cuánto) — Ley 1581. — *Descartado por ahora (decisión 2026-09-23).*
 - [ ] **Backups de BD**: confirmar qué ofrece MySQL de Laravel Cloud y **probar una restauración**.
-- [ ] **2FA y contraseñas fuertes** para usuarios del panel; revisar que no sobren cuentas.
+- [~] **Contraseñas fuertes** hechas (10+, letras y números, filtradas rechazadas en producción; recuperación y cambio por correo). Falta 2FA.
+- [x] **Usuarios en producción**: `php artisan panel:usuario correo --nombre=…` (no correr `DatabaseSeeder`: trae contraseña conocida y datos de ejemplo).
 - [ ] **`APP_DEBUG=false`** y `APP_ENV=production` en Cloud.
 - [ ] **MySQL local solo en loopback** (dev, WSL): `echo 'bind-address = 127.0.0.1' | sudo tee -a /etc/mysql/conf.d/alwaysclean.cnf && sudo systemctl restart mysql`. Verificar con `ss -ltn | grep 3307` (debe decir `127.0.0.1:3307`, no `*:3307`).
 - [ ] Opcional: `'serializable_classes' => false` en `config/cache.php` (no se cachean objetos) y `serialization => json` en `config/session.php` (cierra sesiones activas una vez).
@@ -54,9 +55,19 @@ Hoy no tiene throttle, captcha ni honeypot, y envía un correo desde el dominio 
 
 ## 4. Código / calidad
 
-- [ ] **Commitear** el trabajo pendiente en dos commits: `feat: uploads en disk configurable (s3)` y `chore: laravel 13`. Sin commitear aún: disk `s3` + `app/Support/Uploads.php`, upgrade a L13, `app/Mail/`, `resources/views/emails/`, cambios en `PqrsController` y `.env.example`.
-- [ ] **Tests**: PQRS cubierto (`tests/Feature/PqrsTest.php`, sqlite en memoria). Faltan login y subida de imagen.
+- [~] **Tests**: 71 (PQRS, cotizaciones, login, correos, SEO, servicios). Falta subida de imagen.
 - [ ] Probar a mano tras el upgrade a L13 (no se hizo): login real, subir imagen desde el panel, enviar un PQRS completo.
-- [ ] Sincronizar `ServicioSeeder` con el PDF de portafolio (paneles solares, PTAP/PTAR, pozos sépticos, alquiler de equipos).
+- [x] Servicios del PDF creados **ocultos** sin textos (la empresa los completa en el panel).
 - [ ] Confirmar autorización para mostrar logos de clientes en el carrusel.
 - [x] `PqrsCaso::creating`: número de caso ahora aleatorio (`PQRS-XXXXXX`); antes usaba `max('id') + 3101` (posible colisión con envíos simultáneos; `caso` es `unique` y fallaría). Valorar secuencia segura.
+
+## 5. Pendientes con el cliente (revisión tras el despliegue)
+
+- [ ] Textos (resumen, descripción, qué incluye, sectores) de los 9 servicios ocultos del portafolio; confirmar fotos asignadas a impermeabilización y pozos sépticos.
+- [ ] ¿Categoría propia "Renta de equipos"? Hoy el alquiler quedó en "obras".
+- [ ] Catálogo real de productos: el sitio muestra Biograsa Plus / Drenex Bio / Sanitred; en Drive hay flyers NCH (DC Super Drain, DA Urinal Power).
+- [ ] Fotos de embarcaciones y aires acondicionados (no están en Drive).
+- [ ] Política de tratamiento de datos (Ley 1581) para enlazar desde PQRS.
+- [ ] Google Business Profile: dejar una sola dirección (hoy Bosque y Alpes pegadas); categoría "Servicio de limpieza". ¿Bosque es segunda sede? Código postal de Los Alpes.
+- [ ] Proveedor de medición (Plausible o GA4). ¿Distintivo "5,0 ★ en Google · 12 reseñas"?
+- [ ] Correos para `NOTIFICAR_COTIZACIONES` y `MAIL_FROM_ADDRESS`.
