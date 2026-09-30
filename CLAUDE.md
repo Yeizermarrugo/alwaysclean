@@ -108,7 +108,8 @@ Laravel + Inertia (React/JSX) + Tailwind. Sitio público (home, servicios, produ
 ### Estado al 2026-09-28 (listo para desplegar)
 - **Guía de despliegue completa: `docs/DESPLIEGUE.md`** (Resend, variables, datos iniciales, verificación, dominio). Primero en la URL `*.laravel.cloud` para que el cliente revise; el dominio se conecta después (hoy apunta al WordPress anterior).
 - Decisiones: Laravel Cloud Starter (latinoamericahosting descartado: H1 sin SSH, E1 caro). `QUEUE_CONNECTION=deferred` (sin worker = sin costo extra). Resend para correo.
-- `*.laravel.cloud` nunca se indexa (`Seo::dominioIndexable()`), aunque sea producción.
+- Solo `alwaysclean.com.co` y `www` se indexan (`config('app.dominios_indexables')` → `Seo::dominioIndexable()`); `*.laravel.cloud` y `revision.alwaysclean.com.co` no.
+- Revisión del cliente en `revision.alwaysclean.com.co` (CNAME en el cPanel), no en `*.laravel.cloud`: `laravel.cloud` está en la lista negra de URLs de Invaluement y el correo de la empresa rechaza los correos con esos enlaces (Laravel usa el host de la petición, no `APP_URL`).
 - Usuarios del panel en producción: `php artisan panel:usuario correo --nombre="…"` (envía enlace para crear contraseña; `--mostrar` imprime una temporal). **No** `php artisan db:seed` a secas.
 - Dirección real: Transversal 71, Calle 31I # 11, Los Alpes (`config/company.php`, con coordenadas, enlace y mapa insertable de la ficha de Google). La ficha de Google tiene dos direcciones pegadas: pendiente que la empresa la corrija.
 - Tests: nunca contraseñas literales (GitGuardian las marca en el PR); generar con `Str::random`.

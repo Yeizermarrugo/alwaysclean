@@ -36,7 +36,7 @@ Se puede hacer antes que el despliegue; no afecta el sitio ni el correo actuales
 | `APP_ENV` | `production` |
 | `APP_DEBUG` | `false` |
 | `APP_KEY` | la genera Cloud (o `php artisan key:generate --show`) |
-| `APP_URL` | la URL `https://….laravel.cloud` mientras se revisa; luego `https://alwaysclean.com.co`. Los correos y el SEO usan este valor. |
+| `APP_URL` | `https://revision.alwaysclean.com.co` mientras se revisa (ver §4b); luego `https://alwaysclean.com.co`. Los correos y el SEO usan este valor. |
 | `APP_LOCALE` / `APP_FAKER_LOCALE` | `es` / `es_CO` |
 | `QUEUE_CONNECTION` | `deferred` |
 | `MAIL_MAILER` | `resend` |
@@ -65,6 +65,18 @@ php artisan panel:usuario comercial@alwaysclean.com.co --nombre="Nombre Apellido
 - `panel:usuario` envía por correo el enlace para crear la contraseña (requiere Resend listo). Si el correo aún no funciona: agregar `--mostrar` y cambiar la contraseña temporal en *Mi cuenta*.
 - Los 9 servicios del portafolio sin textos quedan **ocultos** hasta que se completen en el panel.
 
+## 4b. Subdominio de revisión (`revision.alwaysclean.com.co`)
+
+Los correos no deben llevar enlaces a `*.laravel.cloud`: ese dominio está en la lista negra de URLs de Invaluement y el filtro del correo de la empresa (`mx*.hostingcorreo.com`) los rechaza con `550 A URL in this email (laravel . cloud) is listed`. Laravel arma los enlaces con el host de la petición, así que el sitio se revisa desde un subdominio propio:
+
+1. Cloud → *Domains* → agregar `revision.alwaysclean.com.co`; anotar el destino CNAME que indique.
+2. cPanel del hosting (los DNS del dominio están ahí, `ns41`/`ns42`) → *Zone Editor* → **Añadir registro** CNAME `revision.alwaysclean.com.co.` → ese destino. No tocar los demás registros (el `@` sigue en el WordPress).
+3. Esperar a que Cloud lo marque verificado y con SSL.
+4. `APP_URL=https://revision.alwaysclean.com.co` y redesplegar. Turnstile: agregar ese hostname al widget.
+5. Revisar siempre desde ese subdominio (no desde `*.laravel.cloud`).
+
+Solo `alwaysclean.com.co` y `www` se indexan (`config('app.dominios_indexables')`); el subdominio de revisión sale con `noindex` y `robots.txt` bloquea todo.
+
 ## 5. Verificación en la URL de prueba
 
 - [ ] Inicio, servicios (fichas con fotos), productos (pedido → WhatsApp), nosotros, políticas, contacto (mapa), PQRS.
@@ -82,3 +94,4 @@ php artisan panel:usuario comercial@alwaysclean.com.co --nombre="Nombre Apellido
 3. Turnstile: agregar el dominio en los hostnames del widget. Google Maps: agregarlo en las restricciones de la clave.
 4. Revisar `/robots.txt` (ya debe listar el `Sitemap`) y enviar `https://alwaysclean.com.co/sitemap.xml` en Google Search Console.
 5. Google Business Profile: dejar una sola dirección (hoy tiene dos pegadas) y poner el sitio web.
+6. El subdominio `revision` puede quedar (sigue sin indexarse) o quitarse de Cloud y del DNS.
