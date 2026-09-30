@@ -80,12 +80,14 @@ class Seo
     }
 
     /**
-     * Solo se indexa en producción y en el dominio propio: el de pruebas de
-     * Laravel Cloud (*.laravel.cloud) no debe aparecer en Google como copia.
+     * Solo se indexa en producción y en el dominio propio: los de prueba
+     * (*.laravel.cloud, revision.alwaysclean.com.co) no deben aparecer en
+     * Google como copia.
      */
     public static function dominioIndexable(): bool
     {
-        return app()->isProduction() && ! str_ends_with(request()->getHost(), '.laravel.cloud');
+        return app()->isProduction()
+            && in_array(request()->getHost(), config('app.dominios_indexables'), true);
     }
 
     /** Datos estructurados schema.org para Google (ficha de negocio local). */

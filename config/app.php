@@ -54,6 +54,10 @@ return [
 
     'url' => env('APP_URL', 'http://localhost'),
 
+    // Únicos hosts que Google puede indexar (App\Support\Seo::dominioIndexable).
+    // Cualquier otro (*.laravel.cloud, revision.alwaysclean.com.co…) sale con noindex.
+    'dominios_indexables' => ['alwaysclean.com.co', 'www.alwaysclean.com.co'],
+
     /*
     |--------------------------------------------------------------------------
     | Application Timezone
