@@ -35,6 +35,7 @@
 - [Pruebas](#pruebas)
 - [Despliegue](#despliegue)
 - [Seguridad](#seguridad)
+- [Créditos](#créditos)
 - [Licencia](#licencia)
 
 ## Descripción
@@ -46,9 +47,14 @@ El proyecto reúne dos aplicaciones sobre una misma base de código:
 
 ## Capturas
 
-| Inicio | Servicios |
+<p align="center">
+  <img src="docs/capturas/home.jpg" alt="Portada del inicio: foto a pantalla completa, título con los colores del logo y redes sociales" width="100%"><br>
+  <sub>Portada del inicio.</sub>
+</p>
+
+| Servicios | Nosotros |
 | --- | --- |
-| ![Página de inicio](docs/capturas/home.jpg) | ![Catálogo de servicios](docs/capturas/servicios.jpg) |
+| ![Catálogo de servicios](docs/capturas/servicios.jpg) | ![Página Nosotros](docs/capturas/nosotros.jpg) |
 | **Solicitud de cotización** | **Acceso al panel** |
 | ![Formulario de cotización](docs/capturas/cotizacion.jpg) | ![Ingreso al panel interno](docs/capturas/login.jpg) |
 
@@ -63,15 +69,24 @@ El proyecto reúne dos aplicaciones sobre una misma base de código:
 
 | Sección | Qué ofrece |
 | --- | --- |
-| **Inicio** | Propuesta de valor, servicios destacados, productos, bono de bienvenida y carrusel de clientes. |
+| **Inicio** | Portada a pantalla completa con foto real en movimiento, título con los colores del logo y redes sociales. Luego segmentos atendidos, servicios destacados, productos, bono de bienvenida, preguntas frecuentes, certificaciones (ICONTEC ISO 9001, IQNET), avales (DADIS, EPA, FENALCO) y carrusel de clientes. |
 | **Servicios** | Catálogo filtrable por línea de servicio y sector, con ficha de detalle por servicio. |
 | **Productos** | Línea de productos propios. |
-| **Nosotros** | Quiénes somos, misión, visión, valores, principios y sectores atendidos. |
+| **Nosotros** | Quiénes somos, misión, visión, objetivos, principios de acción, valores, creencias y sectores atendidos. |
 | **Políticas** | Política integral de gestión (PO-SGI-001). |
 | **Cotizar** (`/contacto`) | Formulario en tres pasos: servicios, sede y contacto. Autocompletado de direcciones con Google Places y pin en el mapa. Al enviar, la solicitud queda registrada y el cliente continúa la conversación por WhatsApp con su número de caso. |
 | **PQRS** | Radicación de peticiones, quejas, reclamos y sugerencias con número de seguimiento y confirmación por correo. |
 
-Además, la franja superior con NIT y datos de contacto y el botón flotante de WhatsApp aparecen en todas las páginas.
+En todas las páginas aparecen la franja superior con NIT y datos de contacto, el botón flotante de WhatsApp y un pie con dirección, teléfonos y enlaces a Facebook, X e Instagram.
+
+### Diseño e interacción
+
+- **Portada del inicio**: foto real del equipo a pantalla completa con zoom lento continuo, header transparente sobre la imagen y título en *Unbounded* con "Always" en verde y "Clean" en azul, los colores de la gota del logo.
+- **Apariciones al bajar**: las secciones de inicio, servicios, productos y nosotros entran con desvanecido y desplazamiento al hacer scroll, escalonadas en listas y tarjetas. Componente `Revelar` (un `IntersectionObserver` compartido y CSS, sin librerías de animación).
+- **Efectos al pasar el mouse**: tarjetas que se elevan con sombra y acercan la foto, flechas que avanzan y rayas verdes que crecen bajo los títulos.
+- **Carrusel de clientes**: 12 logos reales en gris que toman su color al pasar el mouse, normalizados para ocupar la misma área visual.
+- **Accesibilidad**: con *reducir movimiento* activado en el sistema, todas las animaciones se desactivan y el contenido se muestra completo.
+- **Vista previa al compartir**: imagen Open Graph (`public/images/og-default.jpg`) con la portada del sitio, para WhatsApp, Facebook y LinkedIn.
 
 ### Panel interno
 
@@ -88,7 +103,8 @@ Además, la franja superior con NIT y datos de contacto y el botón flotante de 
 | --- | --- |
 | Backend | Laravel 13 (PHP 8.2+) |
 | Frontend | React 18 con Inertia.js 2 (sin API REST separada) |
-| Estilos | Tailwind CSS 3 y `@tailwindcss/forms` |
+| Estilos | Tailwind CSS 3 y `@tailwindcss/forms`; animaciones en CSS puro |
+| Tipografía | Archivo, Barlow y Unbounded (Google Fonts) |
 | Build | Vite 6 |
 | Base de datos | MySQL 8 (SQLite en memoria para pruebas) |
 | Colas | Laravel Queue (envío de correos) |
@@ -106,17 +122,19 @@ app/
 ├── Models/                  Servicio, Producto, Cotizacion, CotizacionEvento, PqrsCaso
 ├── Rules/                   Reglas de validación propias (Turnstile)
 └── Support/                 Utilidades (cargas de archivos, IP del visitante)
-config/company.php           Datos de la empresa compartidos con el frontend
+config/company.php           Datos de la empresa compartidos con el frontend (incluye redes sociales)
 database/
 ├── migrations/
 ├── seeders/                 Catálogo inicial y cotizaciones de ejemplo
 └── sql/                     Scripts de base de datos para producción
 resources/js/
 ├── Pages/                   Una página Inertia por vista (Home, Contacto, Interno/…)
-├── Components/Site/         Componentes del sitio público
+├── Components/Site/         Componentes del sitio público (Revelar, RedesSociales, ClientesCarousel…)
 ├── Components/Interno/      Componentes del panel
 ├── Layouts/                 SiteLayout e InternoLayout
 └── lib/                     Utilidades de frontend (Google Maps, WhatsApp)
+resources/css/app.css        Estilos globales y animaciones de aparición
+public/images/               Logos, fotos de servicios, avales y logos de clientes
 tests/Feature/               Pruebas de PQRS, cotizaciones e IP del visitante
 ```
 
@@ -173,7 +191,7 @@ Además de las variables estándar de Laravel, el proyecto usa:
 | `DB_PQRS_USERNAME` / `DB_PQRS_PASSWORD` | Usuario de base de datos de privilegios mínimos para el formulario de PQRS. | No: sin él usa la conexión principal |
 | `IP_DESDE_CLOUDFLARE` | Toma la IP del visitante del encabezado de Cloudflare cuando el sitio está detrás de su proxy. | No (por defecto `false`) |
 
-Los datos de la empresa que se muestran en el sitio (NIT, teléfonos, correos, WhatsApp, horario) se editan en `config/company.php`.
+Los datos de la empresa que se muestran en el sitio (NIT, teléfonos, correos, WhatsApp, horario y enlaces a redes sociales) se editan en `config/company.php`.
 
 ## Pruebas
 
@@ -202,6 +220,10 @@ La lista de verificación completa está en [`CLAUDE.md`](CLAUDE.md#checklist-al
 - El panel interno requiere autenticación y no está enlazado desde el sitio público.
 
 Si encuentra una vulnerabilidad, escriba a **comercial@alwaysclean.com.co** en lugar de abrir un *issue* público.
+
+## Créditos
+
+Diseño y desarrollo: [Yeizer Marrugo](https://yeizermarrugo.github.io/mi-portafolio/).
 
 ## Licencia
 
