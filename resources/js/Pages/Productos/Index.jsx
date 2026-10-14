@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { usePage } from '@inertiajs/react';
 import SiteLayout from '@/Layouts/SiteLayout';
 import ProductCard from '@/Components/Site/ProductCard';
+import Revelar from '@/Components/Site/Revelar';
 import Modal from '@/Components/Modal';
 import { waLink } from '@/lib/whatsapp';
 import { carrito, presentaciones, useCarrito } from '@/lib/carrito';
@@ -15,7 +16,8 @@ export default function ProductosIndex({ productos }) {
     return (
         <SiteLayout title="Productos">
             <div className="flex flex-col items-start justify-between gap-3 border-b border-mist-300 px-5 py-8 md:flex-row md:items-end lg:px-10 lg:py-9">
-                <div>
+                <Revelar>
+                    <span className="raya-titulo mb-3" aria-hidden="true" />
                     <h1 className="mb-1.5 font-display text-[28px] font-extrabold tracking-tight text-navy lg:text-[34px]">
                         Productos especializados
                     </h1>
@@ -25,19 +27,21 @@ export default function ProductosIndex({ productos }) {
                     <p className="mt-2 max-w-[520px] text-[13px] text-ink-500">
                         Agregue los productos y cantidades que necesita y cotice todo el pedido en un solo mensaje de WhatsApp.
                     </p>
-                </div>
-                <span className="rounded-full bg-green-light px-3 py-1.5 text-xs font-semibold text-green-dark">
+                </Revelar>
+                <Revelar as="span" efecto="zoom" retraso={200} className="rounded-full bg-green-light px-3 py-1.5 text-xs font-semibold text-green-dark">
                     {productos.length} referencias
-                </span>
+                </Revelar>
             </div>
 
             <div className="grid grid-cols-1 gap-5 px-5 py-7 sm:grid-cols-2 lg:grid-cols-3 lg:px-10 lg:py-8">
-                {productos.map((p) => (
-                    <ProductCard key={p.id} producto={p} onVerFicha={() => setAbierto(p)} />
+                {productos.map((p, i) => (
+                    <Revelar key={p.id} retraso={(i % 3) * 120} className="flex">
+                        <ProductCard producto={p} onVerFicha={() => setAbierto(p)} />
+                    </Revelar>
                 ))}
             </div>
 
-            <div className="mx-5 mb-8 flex flex-col items-start gap-5 rounded-xl bg-navy p-7 text-white sm:flex-row sm:items-center sm:justify-between lg:mx-10">
+            <Revelar efecto="zoom" className="mx-5 mb-8 flex flex-col items-start gap-5 rounded-xl bg-navy p-7 text-white sm:flex-row sm:items-center sm:justify-between lg:mx-10">
                 <div>
                     <div className="mb-1 font-display text-[22px] font-bold">Programa de dosificación mensual</div>
                     <div className="text-sm text-white/66">
@@ -48,11 +52,11 @@ export default function ProductosIndex({ productos }) {
                     href={waLink(empresa.whatsapp, 'Hola, quiero información del programa de dosificación mensual.')}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="whitespace-nowrap rounded-[9px] bg-green px-5 py-3 font-display text-sm font-semibold text-white"
+                    className="whitespace-nowrap rounded-[9px] bg-green px-5 py-3 font-display text-sm font-semibold text-white transition hover:-translate-y-0.5 hover:bg-green-dark"
                 >
                     Solicitar programa
                 </a>
-            </div>
+            </Revelar>
 
             {items.length > 0 && (
                 <div className="pointer-events-none sticky bottom-4 z-30 mx-5 -mt-2 mb-6 flex justify-center lg:mx-10">

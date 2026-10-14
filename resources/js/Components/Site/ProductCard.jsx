@@ -9,10 +9,10 @@ export default function ProductCard({ producto, onVerFicha }) {
     const cantidad = cantidadDe(producto.id, presentacion);
 
     return (
-        <div className="flex flex-col overflow-hidden rounded-xl border border-mist-300">
-            <button type="button" onClick={onVerFicha} className="block h-[190px] w-full">
+        <div className="group flex w-full flex-col overflow-hidden rounded-xl border border-mist-300 bg-white transition duration-300 hover:-translate-y-1 hover:border-green/40 hover:shadow-[0_18px_40px_-16px_rgba(15,23,42,0.3)]">
+            <button type="button" onClick={onVerFicha} className="block h-[190px] w-full overflow-hidden">
                 {producto.imagen_url ? (
-                    <img src={producto.imagen_url} alt={producto.nombre} className="h-full w-full object-cover" />
+                    <img src={producto.imagen_url} alt={producto.nombre} className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105" />
                 ) : (
                     <span className="grid h-full w-full place-items-center bg-[repeating-linear-gradient(135deg,#DFE2EE_0_9px,#EDEFF6_9px_18px)] font-display text-5xl font-extrabold text-navy/35">
                         {producto.codigo}

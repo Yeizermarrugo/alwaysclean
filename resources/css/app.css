@@ -27,3 +27,44 @@ html {
 body {
     @apply bg-white text-navy antialiased;
 }
+
+/* Entradas al hacer scroll (componente Revelar). */
+[data-revelar]:not([data-revelar='listo']) {
+    transition:
+        opacity 0.8s cubic-bezier(0.2, 0.8, 0.2, 1),
+        transform 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
+    transition-delay: var(--retraso, 0ms);
+}
+[data-revelar]:not(.revelado) { opacity: 0; transform: translateY(28px); }
+[data-revelar='izq']:not(.revelado) { transform: translateX(-36px); }
+[data-revelar='der']:not(.revelado) { transform: translateX(36px); }
+[data-revelar='zoom']:not(.revelado) { transform: scale(0.94); }
+/* Al terminar, Revelar cambia el atributo a 'listo' y estas reglas dejan de aplicar. */
+
+/* Raya verde bajo los títulos de sección: crece cuando la sección aparece. */
+.raya-titulo {
+    display: block;
+    height: 3px;
+    width: 0;
+    background: theme('colors.green.DEFAULT');
+    transition: width 0.9s cubic-bezier(0.2, 0.8, 0.2, 1) 0.35s;
+}
+.revelado .raya-titulo { width: 48px; }
+
+/* Respuesta de preguntas frecuentes al abrirse. */
+@keyframes faq-abre {
+    from { opacity: 0; transform: translateY(-6px); }
+    to { opacity: 1; transform: none; }
+}
+.faq-respuesta:not([hidden]) { animation: faq-abre 0.35s ease-out both; }
+
+@media (prefers-reduced-motion: reduce) {
+    [data-revelar]:not(.revelado),
+    [data-revelar]:not([data-revelar='listo']) {
+        opacity: 1;
+        transform: none;
+        transition: none;
+    }
+    .raya-titulo { width: 48px; transition: none; }
+    .faq-respuesta:not([hidden]) { animation: none; }
+}

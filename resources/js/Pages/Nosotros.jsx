@@ -1,5 +1,6 @@
 import { Link, usePage } from '@inertiajs/react';
 import SiteLayout from '@/Layouts/SiteLayout';
+import Revelar from '@/Components/Site/Revelar';
 
 const OBJETIVOS = [
     'Brindar soluciones mostrando como valor representativo la transparencia y más sincera asesoría, enfocada hacia la protección ambiental y producción más limpia.',
@@ -71,7 +72,7 @@ export default function Nosotros() {
                     className="pointer-events-none absolute -right-32 -top-32 h-[420px] w-[420px] rounded-full bg-green/20 blur-3xl"
                     aria-hidden="true"
                 />
-                <div className="relative">
+                <Revelar className="relative">
                     <div className="mb-6 text-[12.5px] text-white/50">
                         <Link href={route('home')} className="hover:text-green-bright">Inicio</Link> / Nosotros
                     </div>
@@ -83,25 +84,26 @@ export default function Nosotros() {
                         Servicios de ingeniería sanitaria, obra civil y limpieza especializada, integrando seguridad,
                         calidad y medio ambiente en cada proyecto.
                     </p>
-                </div>
+                </Revelar>
 
                 <div className="relative mt-10 grid grid-cols-2 gap-px overflow-hidden border-t border-white/10 bg-white/10 lg:mt-14 lg:grid-cols-4">
-                    {datos.map((d) => (
-                        <div key={d.label} className="bg-navy-deep py-6 pr-4 lg:px-8 lg:first:pl-0">
-                            <div className="font-display text-[24px] font-extrabold text-white lg:text-[30px]">{d.valor}</div>
+                    {datos.map((d, i) => (
+                        <Revelar key={d.label} retraso={200 + i * 100} className="group bg-navy-deep py-6 pr-4 lg:px-8 lg:first:pl-0">
+                            <div className="font-display text-[24px] font-extrabold text-white transition-colors group-hover:text-green-bright lg:text-[30px]">{d.valor}</div>
                             <div className="mt-0.5 text-[12.5px] text-white/55">{d.label}</div>
-                        </div>
+                        </Revelar>
                     ))}
                 </div>
             </section>
 
             {/* Historia / Quiénes somos */}
             <section className="grid gap-8 px-5 py-14 lg:grid-cols-[.85fr_1.15fr] lg:gap-16 lg:px-10 lg:py-20">
-                <div className="lg:sticky lg:top-8 lg:self-start">
+                <Revelar efecto="izq" className="lg:sticky lg:top-8 lg:self-start">
+                    <span className="raya-titulo mb-4" aria-hidden="true" />
                     <Eyebrow>QUIÉNES SOMOS</Eyebrow>
                     <Titulo>Nacimos para resolver, crecimos para construir.</Titulo>
-                </div>
-                <div className="flex flex-col gap-5 text-[15px] leading-relaxed text-navy-600 text-pretty">
+                </Revelar>
+                <Revelar retraso={150} className="flex flex-col gap-5 text-[15px] leading-relaxed text-navy-600 text-pretty">
                     <p>
                         Always Clean Colombia S.A.S. fue fundada a principios del año 2020 en el seno de una familia
                         emprendedora para solucionar inicialmente servicios de limpieza y desinfección por la alta demanda
@@ -115,7 +117,7 @@ export default function Nosotros() {
                         Integramos las variables sociales, económicas y ambientales en cada etapa de nuestros proyectos,
                         buscando generar un impacto positivo y mejorar la calidad de vida de las comunidades en las que operamos.
                     </p>
-                </div>
+                </Revelar>
             </section>
 
             {/* Misión / Visión */}
@@ -129,75 +131,98 @@ export default function Nosotros() {
                         titulo: 'Visión',
                         texto: 'Ser una empresa líder a nivel nacional en la prestación de servicios de ingeniería sanitaria y construcción de obras civiles, reconocida por nuestra excelencia en la ejecución de proyectos, la innovación tecnológica y la aplicación de prácticas sostenibles, pioneros en el desarrollo e implementación de soluciones técnicas y ambientales.',
                     },
-                ].map((b) => (
-                    <article key={b.titulo} className="relative overflow-hidden rounded-2xl border border-mist-300 bg-white p-7 lg:p-9">
-                        <div className="absolute left-0 top-0 h-full w-1 bg-green" aria-hidden="true" />
+                ].map((b, i) => (
+                    <Revelar
+                        as="article"
+                        key={b.titulo}
+                        efecto={i === 0 ? 'izq' : 'der'}
+                        className="group relative overflow-hidden rounded-2xl border border-mist-300 bg-white p-7 transition duration-300 hover:-translate-y-1 hover:shadow-[0_18px_40px_-18px_rgba(15,23,42,0.3)] lg:p-9"
+                    >
+                        <div className="absolute left-0 top-0 h-full w-1 bg-green transition-all duration-500 group-hover:w-1.5" aria-hidden="true" />
                         <Eyebrow>NUESTRA {b.titulo.toUpperCase()}</Eyebrow>
                         <h3 className="mb-3 font-display text-2xl font-extrabold text-navy">{b.titulo}</h3>
                         <p className="text-[14.5px] leading-relaxed text-navy-600 text-pretty">{b.texto}</p>
-                    </article>
+                    </Revelar>
                 ))}
             </section>
 
             {/* Objetivos */}
             <section className="px-5 py-14 lg:px-10 lg:py-20">
-                <div className="mb-9 max-w-[560px]">
+                <Revelar className="mb-9 max-w-[560px]">
+                    <span className="raya-titulo mb-4" aria-hidden="true" />
                     <Eyebrow>NUESTROS OBJETIVOS</Eyebrow>
                     <Titulo>Lo que buscamos en cada proyecto</Titulo>
-                </div>
+                </Revelar>
                 <ol className="grid gap-5 md:grid-cols-3">
                     {OBJETIVOS.map((o, i) => (
-                        <li key={i} className="flex flex-col gap-4 border-t-2 border-navy pt-5">
-                            <span className="font-display text-[15px] font-extrabold text-green-dark">
+                        <Revelar as="li" key={i} retraso={i * 130} className="group flex flex-col gap-4 border-t-2 border-navy pt-5 transition-colors hover:border-green">
+                            <span className="font-display text-[15px] font-extrabold text-green-dark transition-transform duration-300 group-hover:translate-x-1">
                                 {String(i + 1).padStart(2, '0')}
                             </span>
                             <p className="text-[14.5px] leading-relaxed text-navy-600 text-pretty">{o}</p>
-                        </li>
+                        </Revelar>
                     ))}
                 </ol>
             </section>
 
             {/* Principios de acción */}
             <section className="bg-navy px-5 py-14 lg:px-10 lg:py-20">
-                <div className="mb-9 max-w-[560px]">
+                <Revelar className="mb-9 max-w-[560px]">
+                    <span className="raya-titulo mb-4" aria-hidden="true" />
                     <Eyebrow light>PRINCIPIOS DE ACCIÓN</Eyebrow>
                     <Titulo light>Cómo trabajamos</Titulo>
-                </div>
+                </Revelar>
                 <div className="grid gap-px overflow-hidden rounded-2xl bg-white/10 sm:grid-cols-2 lg:grid-cols-4">
-                    {PRINCIPIOS.map((p) => (
-                        <div key={p.titulo} className="flex flex-col gap-3 bg-navy p-6 lg:p-7">
-                            <span className="grid h-11 w-11 place-items-center rounded-xl bg-green/15 text-green-bright">
+                    {PRINCIPIOS.map((p, i) => (
+                        <Revelar key={p.titulo} retraso={i * 110} className="group flex flex-col gap-3 bg-navy p-6 transition-colors duration-300 hover:bg-[#13136e] lg:p-7">
+                            <span className="grid h-11 w-11 place-items-center rounded-xl bg-green/15 text-green-bright transition duration-300 group-hover:-translate-y-0.5 group-hover:scale-110 group-hover:bg-green group-hover:text-white">
                                 <svg viewBox="0 0 24 24" className="h-[22px] w-[22px]" fill="currentColor" aria-hidden="true">
                                     <path d={p.icono} />
                                 </svg>
                             </span>
                             <h3 className="font-display text-[17px] font-bold text-white">{p.titulo}</h3>
                             <p className="text-[14px] leading-relaxed text-white/65">{p.texto}</p>
-                        </div>
+                        </Revelar>
                     ))}
                 </div>
             </section>
 
             {/* Valores y creencias */}
             <section className="px-5 py-14 lg:px-10 lg:py-20">
-                <Eyebrow>NUESTRA CULTURA</Eyebrow>
+                <Revelar>
+                    <span className="raya-titulo mb-4" aria-hidden="true" />
+                    <Eyebrow>NUESTRA CULTURA</Eyebrow>
+                </Revelar>
                 <div className="grid gap-12 lg:grid-cols-[1.4fr_1fr] lg:gap-16">
                     <div>
                         <Titulo>Valores institucionales</Titulo>
                         <div className="mt-7 grid grid-cols-2 gap-3 sm:grid-cols-3">
-                            {VALORES_INSTITUCIONALES.map((v) => (
-                                <div key={v} className="flex items-center gap-3 rounded-xl border border-mist-300 px-4 py-4">
-                                    <span className="h-2 w-2 shrink-0 rounded-full bg-green" aria-hidden="true" />
+                            {VALORES_INSTITUCIONALES.map((v, i) => (
+                                <Revelar
+                                    key={v}
+                                    efecto="zoom"
+                                    retraso={i * 70}
+                                    className="group flex items-center gap-3 rounded-xl border border-mist-300 px-4 py-4 transition duration-300 hover:-translate-y-0.5 hover:border-green hover:bg-green-light"
+                                >
+                                    <span className="h-2 w-2 shrink-0 rounded-full bg-green transition-transform duration-300 group-hover:scale-150" aria-hidden="true" />
                                     <span className="font-display text-[14.5px] font-semibold text-navy">{v}</span>
-                                </div>
+                                </Revelar>
                             ))}
                         </div>
                     </div>
                     <div>
                         <Titulo>Creencias</Titulo>
                         <ul className="mt-7 divide-y divide-mist-300 border-y border-mist-300">
-                            {CREENCIAS.map((c) => (
-                                <li key={c} className="py-3.5 font-display text-[14.5px] font-semibold text-navy">{c}</li>
+                            {CREENCIAS.map((c, i) => (
+                                <Revelar
+                                    as="li"
+                                    key={c}
+                                    efecto="der"
+                                    retraso={i * 90}
+                                    className="py-3.5 font-display text-[14.5px] font-semibold text-navy transition-colors hover:text-green-dark"
+                                >
+                                    {c}
+                                </Revelar>
                             ))}
                         </ul>
                     </div>
@@ -206,27 +231,32 @@ export default function Nosotros() {
 
             {/* Sectores */}
             <section className="border-t border-mist-300 bg-mist-50 px-5 py-14 lg:px-10 lg:py-20">
-                <div className="mb-9 flex flex-col justify-between gap-3 md:flex-row md:items-end">
+                <Revelar className="mb-9 flex flex-col justify-between gap-3 md:flex-row md:items-end">
                     <div className="max-w-[560px]">
+                        <span className="raya-titulo mb-4" aria-hidden="true" />
                         <Eyebrow>SECTORES</Eyebrow>
                         <Titulo>Una formulación para cada tipo de cliente</Titulo>
                     </div>
-                    <Link href={route('servicios.index')} className="font-display text-[13.5px] font-semibold text-green-dark hover:text-green">
-                        Ver servicios →
+                    <Link href={route('servicios.index')} className="group font-display text-[13.5px] font-semibold text-green-dark hover:text-green">
+                        Ver servicios <span className="inline-block transition-transform group-hover:translate-x-1">→</span>
                     </Link>
-                </div>
+                </Revelar>
                 <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
-                    {SECTORES.map((s) => (
-                        <div key={s} className="rounded-xl bg-white px-4 py-5 font-display text-[14px] font-semibold text-navy shadow-[0_1px_0_rgba(13,13,91,0.06)] ring-1 ring-mist-300">
+                    {SECTORES.map((s, i) => (
+                        <Revelar
+                            key={s}
+                            retraso={(i % 4) * 90}
+                            className="rounded-xl bg-white px-4 py-5 font-display text-[14px] font-semibold text-navy shadow-[0_1px_0_rgba(13,13,91,0.06)] ring-1 ring-mist-300 transition duration-300 hover:-translate-y-1 hover:text-green-dark hover:shadow-[0_14px_30px_-16px_rgba(15,23,42,0.35)] hover:ring-green/50"
+                        >
                             {s}
-                        </div>
+                        </Revelar>
                     ))}
                 </div>
             </section>
 
             {/* CTA */}
             <section className="px-5 py-12 lg:px-10 lg:py-16">
-                <div className="flex flex-col items-start gap-6 rounded-2xl bg-navy-deep p-8 lg:flex-row lg:items-center lg:justify-between lg:p-10">
+                <Revelar efecto="zoom" className="flex flex-col items-start gap-6 rounded-2xl bg-navy-deep p-8 lg:flex-row lg:items-center lg:justify-between lg:p-10">
                     <div className="max-w-[560px]">
                         <h2 className="mb-2 font-display text-[22px] font-extrabold text-white lg:text-[26px]">
                             Seguridad, calidad y ambiente en un solo sistema
@@ -244,12 +274,12 @@ export default function Nosotros() {
                         </Link>
                         <Link
                             href={route('contacto.create')}
-                            className="rounded-[9px] bg-green px-5 py-3 font-display text-[14px] font-semibold text-white hover:bg-green-dark"
+                            className="rounded-[9px] bg-green px-5 py-3 font-display text-[14px] font-semibold text-white transition hover:-translate-y-0.5 hover:bg-green-dark"
                         >
                             Solicitar cotización
                         </Link>
                     </div>
-                </div>
+                </Revelar>
             </section>
         </SiteLayout>
     );
