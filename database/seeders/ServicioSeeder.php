@@ -255,15 +255,21 @@ class ServicioSeeder extends Seeder
     }
 
     /**
-     * Fotos reales de la empresa (carpeta "FOTOS PAGINA WEB" de Drive), optimizadas
-     * en public/images/servicios/{slug}.jpg y galeria/{slug}-N.jpg. Reemplazan la
+     * Fotos reales de la empresa (carpeta "FOTOS PAGINA WEB" de Drive y la tanda
+     * 11062022 - 9122024), optimizadas y sin EXIF/GPS en
+     * public/images/servicios/{slug}.jpg y galeria/{slug}-N.jpg. Reemplazan la
      * foto de referencia cuando existen.
+     *
+     * $respetarSubida: no tocar la portada si la empresa subió una propia desde el
+     * panel (ruta en el disco de cargas). Las fotos de galería solo se agregan.
      */
-    public static function fotosReales(Servicio $servicio): void
+    public static function fotosReales(Servicio $servicio, bool $respetarSubida = false): void
     {
         $portada = "/images/servicios/{$servicio->slug}.jpg";
+        $actual = (string) $servicio->imagen;
+        $esReferencia = $actual === '' || str_starts_with($actual, 'http') || str_starts_with($actual, '/images/');
 
-        if (is_file(public_path($portada))) {
+        if (is_file(public_path($portada)) && (! $respetarSubida || $esReferencia)) {
             $servicio->update(['imagen' => $portada]);
         }
 
