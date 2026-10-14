@@ -41,8 +41,15 @@ export default function ProductosIndex({ productos }) {
                 ))}
             </div>
 
-            <Revelar efecto="zoom" className="mx-5 mb-8 flex flex-col items-start gap-5 rounded-xl bg-navy p-7 text-white sm:flex-row sm:items-center sm:justify-between lg:mx-10">
-                <div>
+            <Revelar efecto="zoom" className="mx-5 mb-8 flex flex-col items-start gap-5 overflow-hidden rounded-xl bg-navy p-7 text-white sm:flex-row sm:items-center sm:justify-between sm:py-0 sm:pl-0 lg:mx-10">
+                {/* Dosificador "Control biológico" instalado en una cocina (foto real de la empresa). */}
+                <img
+                    src="/images/productos/programa-dosificacion.jpg"
+                    alt="Dosificador de control biológico instalado en una cocina"
+                    className="-mx-7 -mt-7 h-48 w-[calc(100%+3.5rem)] max-w-none object-cover object-[center_20%] sm:m-0 sm:h-40 sm:w-44 sm:shrink-0"
+                    loading="lazy"
+                />
+                <div className="sm:flex-1">
                     <div className="mb-1 font-display text-[22px] font-bold">Programa de dosificación mensual</div>
                     <div className="text-sm text-white/66">
                         Entrega programada más visita técnica de control. Ideal para cocinas de hotel y centros comerciales.
