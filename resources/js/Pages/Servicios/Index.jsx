@@ -6,12 +6,20 @@ import Revelar from '@/Components/Site/Revelar';
 import { waLink } from '@/lib/whatsapp';
 import { usePage } from '@inertiajs/react';
 
+const SECTORES_A_LA_VISTA = 8;
+
 export default function ServiciosIndex({ servicios, conteos, categoriaActiva, categorias }) {
     const { empresa } = usePage().props;
     const [busqueda, setBusqueda] = useState('');
     const [sector, setSector] = useState(null);
+    const [verTodosSectores, setVerTodosSectores] = useState(false);
 
-    const sectoresDisponibles = [...new Set(servicios.flatMap((s) => s.sectores))].sort();
+    const sectoresDisponibles = [...new Set(servicios.flatMap((s) => s.sectores))].sort((a, b) => a.localeCompare(b, 'es'));
+    const porSector = Object.fromEntries(sectoresDisponibles.map((x) => [x, servicios.filter((s) => s.sectores.includes(x)).length]));
+    // Lista corta por defecto; el sector elegido se muestra aunque esté fuera de los primeros.
+    const sectoresVisibles = verTodosSectores
+        ? sectoresDisponibles
+        : sectoresDisponibles.filter((x, i) => i < SECTORES_A_LA_VISTA || x === sector);
 
     const filtrados = servicios
         .filter((s) => s.nombre.toLowerCase().includes(busqueda.toLowerCase()))
@@ -67,22 +75,36 @@ export default function ServiciosIndex({ servicios, conteos, categoriaActiva, ca
                     </div>
                     <div>
                         <div className="mb-2.5 text-[11px] font-semibold tracking-[0.13em] text-ink-500">SECTOR</div>
-                        <div className="flex flex-wrap gap-1.5 text-xs font-medium">
+                        <div className="flex flex-col gap-2.5 text-[13.5px] font-medium text-navy-700">
                             <button
+                                type="button"
                                 onClick={() => setSector(null)}
-                                className={`rounded-full px-2.5 py-1.5 ${!sector ? 'bg-green-light text-green-dark' : 'bg-mist-100 text-navy-700'}`}
+                                aria-pressed={!sector}
+                                className={`text-left hover:text-green-dark ${!sector ? 'font-semibold text-green-dark' : ''}`}
                             >
-                                Todos
+                                {!sector ? '●' : '○'} Todos ({servicios.length})
                             </button>
-                            {sectoresDisponibles.map((s) => (
+                            {sectoresVisibles.map((s) => (
                                 <button
                                     key={s}
+                                    type="button"
                                     onClick={() => setSector(sector === s ? null : s)}
-                                    className={`rounded-full px-2.5 py-1.5 ${sector === s ? 'bg-green-light text-green-dark' : 'bg-mist-100 text-navy-700'}`}
+                                    aria-pressed={sector === s}
+                                    className={`text-left hover:text-green-dark ${sector === s ? 'font-semibold text-green-dark' : ''}`}
                                 >
-                                    {s}
+                                    {sector === s ? '●' : '○'} {s} ({porSector[s]})
                                 </button>
                             ))}
+                            {sectoresDisponibles.length > SECTORES_A_LA_VISTA && (
+                                <button
+                                    type="button"
+                                    onClick={() => setVerTodosSectores((v) => !v)}
+                                    aria-expanded={verTodosSectores}
+                                    className="self-start font-display text-[12.5px] font-semibold text-green-dark hover:text-green"
+                                >
+                                    {verTodosSectores ? 'Ver menos' : `Ver los ${sectoresDisponibles.length} sectores`}
+                                </button>
+                            )}
                         </div>
                     </div>
                     <div className="rounded-[10px] bg-mist-50 p-4">
