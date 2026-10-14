@@ -4,6 +4,7 @@ import ServiceCard from '@/Components/Site/ServiceCard';
 import ServiceRow from '@/Components/Site/ServiceRow';
 import ClientesCarousel from '@/Components/Site/ClientesCarousel';
 import PreguntasFrecuentes from '@/Components/Site/PreguntasFrecuentes';
+import RedesSociales from '@/Components/Site/RedesSociales';
 import { waLink } from '@/lib/whatsapp';
 
 const SEGMENTOS = [
@@ -31,55 +32,74 @@ export default function Home({ destacados, todos, conteos, productos, preguntas 
     return (
         <SiteLayout title="Limpieza, desinfección y saneamiento en Cartagena">
             {/* Hero */}
-            <div className="grid gap-8 bg-mist-50 lg:grid-cols-[1.05fr_.95fr]">
-                <div className="flex flex-col gap-5 self-center px-5 py-12 lg:px-10 lg:py-16">
-                    <div className="self-start rounded-full bg-green-light px-3 py-1.5 text-[11px] font-semibold tracking-[0.12em] text-green-dark">
-                        LIMPIEZA Y DESINFECCIÓN DE ALTA CALIDAD
-                    </div>
-                    <h1 className="font-display text-4xl font-extrabold leading-[1.02] tracking-tight text-navy text-balance lg:text-[54px]">
-                        Servicios integrales de limpieza para empresas de la costa.
+            <style>{`
+                @keyframes hero-sube {
+                    from { opacity: 0; transform: translateY(18px); }
+                    to { opacity: 1; transform: translateY(0); }
+                }
+                @keyframes hero-linea {
+                    from { transform: scaleY(0); }
+                    to { transform: scaleY(1); }
+                }
+                .hero-sube { animation: hero-sube .8s cubic-bezier(.2,.8,.2,1) both; }
+                .hero-linea { animation: hero-linea 1.2s cubic-bezier(.2,.8,.2,1) .9s both; transform-origin: top; }
+                @media (prefers-reduced-motion: reduce) {
+                    .hero-sube, .hero-linea { animation: none; }
+                }
+            `}</style>
+            <section className="relative isolate flex min-h-[calc(100dvh/var(--zoom)-4.25rem)] items-center overflow-hidden bg-navy md:min-h-[calc(100dvh/var(--zoom)-7rem)]">
+                <img
+                    src="/images/servicios/lavado-y-desinfeccion-de-tanques-de-agua.jpg"
+                    alt=""
+                    className="absolute inset-0 -z-20 h-full w-full object-cover"
+                />
+                <div className="absolute inset-0 -z-10 bg-gradient-to-r from-[#04041c]/95 via-[#04041c]/85 to-navy-deep/60" aria-hidden="true" />
+
+                <div className="mx-auto w-full max-w-6xl px-5 py-20 sm:px-10 lg:px-16">
+                    <h1 className="hero-sube font-display text-[34px] font-extrabold uppercase leading-[1.05] tracking-tight text-white text-balance sm:text-5xl lg:text-[64px]">
+                        Bienvenidos a {empresa.nombre}
                     </h1>
-                    <p className="max-w-[480px] text-[17px] leading-relaxed text-navy-600 text-pretty">
+                    <p
+                        className="hero-sube mt-6 max-w-4xl text-[13px] font-bold uppercase leading-relaxed tracking-[0.18em] text-white/70 sm:text-[15px]"
+                        style={{ animationDelay: '.15s' }}
+                    >
                         Limpieza, desinfección, saneamiento básico y obras civiles con personal certificado en trabajo en altura y productos biodegradables.
                     </p>
-                    <div className="mt-1.5 flex flex-wrap gap-3">
+                    <div className="hero-sube mt-12 flex flex-wrap gap-4" style={{ animationDelay: '.3s' }}>
                         <Link
                             href={route('contacto.create')}
-                            className="rounded-[9px] bg-green px-[22px] py-3.5 font-display text-[15px] font-semibold text-white"
+                            className="border-2 border-white px-7 py-4 font-display text-[13px] font-bold uppercase tracking-[0.16em] text-white transition-colors duration-200 hover:border-green hover:bg-green"
                         >
-                            Solicitar cotización gratis
+                            Solicitar cotización
                         </Link>
                         <Link
-                            href={route('servicios.index')}
-                            className="rounded-[9px] border-[1.5px] border-mist-border bg-white px-[22px] py-3.5 font-display text-[15px] font-semibold text-navy"
+                            href={route('nosotros.index')}
+                            className="border-2 border-white px-7 py-4 font-display text-[13px] font-bold uppercase tracking-[0.16em] text-white transition-colors duration-200 hover:bg-white hover:text-navy"
                         >
-                            Ver los {totalServicios} servicios
+                            Sobre nosotros
                         </Link>
                     </div>
-                    <div className="mt-3.5 flex flex-wrap gap-8 border-t border-mist-300 pt-5">
-                        <div>
-                            <div className="font-display text-2xl font-extrabold text-navy">{totalServicios}</div>
-                            <div className="text-[12.5px] text-navy-500">servicios activos</div>
-                        </div>
-                        <div>
-                            <div className="font-display text-2xl font-extrabold text-navy">&lt;24 h</div>
-                            <div className="text-[12.5px] text-navy-500">respuesta a cotización</div>
-                        </div>
-                        <div>
-                            <div className="font-display text-2xl font-extrabold text-navy">0491 / 1409</div>
-                            <div className="text-[12.5px] text-navy-500">resoluciones vigentes</div>
-                        </div>
-                    </div>
+                    <RedesSociales className="hero-sube mt-10 flex gap-3 lg:hidden" />
                 </div>
-                <img
-                    src="https://images.unsplash.com/photo-1627905646269-7f034dcc5738?auto=format&fit=crop&w=1200&q=75"
-                    alt="Cuadrilla de aseo en operación"
-                    className="min-h-[280px] w-full object-cover lg:min-h-[520px]"
-                />
-            </div>
+
+                <RedesSociales className="absolute right-6 top-1/2 hidden -translate-y-1/2 flex-col gap-3 lg:flex xl:right-10" />
+
+                <a
+                    href="#segmentos"
+                    className="absolute bottom-0 right-28 hidden items-start gap-3 font-display text-[11px] font-bold uppercase tracking-[0.22em] text-white md:flex lg:right-32"
+                >
+                    <span className="flex items-center gap-2 pt-1">
+                        <svg viewBox="0 0 24 24" className="h-4 w-4 text-green" fill="none" stroke="currentColor" strokeWidth="2.5" aria-hidden="true">
+                            <path d="m6 9 6 6 6-6" />
+                        </svg>
+                        Sigue navegando
+                    </span>
+                    <span className="hero-linea block h-24 w-0.5 bg-green" aria-hidden="true" />
+                </a>
+            </section>
 
             {/* Segmentos */}
-            <div className="grid divide-y divide-mist-300 border-b border-mist-300 md:grid-cols-3 md:divide-x md:divide-y-0">
+            <div id="segmentos" className="scroll-mt-4 grid divide-y divide-mist-300 border-b border-mist-300 md:grid-cols-3 md:divide-x md:divide-y-0">
                 {SEGMENTOS.map((s) => (
                     <div key={s.kicker} className="flex flex-col gap-1.5 px-6 py-6 lg:px-8">
                         <div className="font-sans text-[11px] font-semibold tracking-[0.14em] text-green-dark">{s.kicker.toUpperCase()}</div>
