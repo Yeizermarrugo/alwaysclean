@@ -11,13 +11,21 @@ const CLIENTES = [
     { nombre: 'Zi One Luxury Hotel', archivo: 'zione.png', ancho: 561, alto: 409 },
     { nombre: 'Baird Service S.A.S', archivo: 'baird.png', ancho: 1017, alto: 422 },
     { nombre: 'OINAC · Aeropuerto de Cartagena', archivo: 'oinac.png', ancho: 528, alto: 318, escala: 1.2 },
+    { nombre: 'Contecar · Terminal de Contenedores de Cartagena', archivo: 'contecar.png', ancho: 711, alto: 245 },
+    { nombre: 'Sociedad Portuaria Regional de Cartagena', archivo: 'puerto_cartagena.png', ancho: 1153, alto: 526, escala: 1.4 },
+    { nombre: 'Zona Franca La Candelaria', archivo: 'zf_la_candelaria.png', ancho: 844, alto: 360 },
+    { nombre: 'Lhoist', archivo: 'lhoist.png', ancho: 1220, alto: 520, escala: 1.15 },
+    { nombre: 'Centro Comercial Caribe Plaza', archivo: 'caribe_plaza.png', ancho: 535, alto: 582, escala: 0.85 },
+    { nombre: 'Hotel Las Américas Cartagena de Indias', archivo: 'hotel_las_americas.png', ancho: 1080, alto: 801, escala: 1.15 },
+    { nombre: 'Prodesa', archivo: 'prodesa.png', ancho: 328, alto: 311, escala: 0.9 },
 ];
 
 /*
  * Todos los PNG están recortados al contenido con el mismo margen y fondo transparente.
  * El alto sale de la proporción para que cada logo ocupe la misma área visual:
  * uno ancho (Aviatur) queda más bajo y uno cuadrado (Aguas de Cartagena) más alto.
- * `escala` compensa logos de trazo fino que en gris se ven más livianos (OINAC).
+ * `escala` iguala el peso visual: >1 para logos finos, con mucho detalle o con huecos (OINAC, Puerto,
+ * Lhoist), <1 para bloques sólidos que se ven pesados (Caribe Plaza, Prodesa).
  */
 const alto = (c) => `calc(var(--logo-base) * ${((c.escala ?? 1) / Math.sqrt(c.ancho / c.alto)).toFixed(3)})`;
 
