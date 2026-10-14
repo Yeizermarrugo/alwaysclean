@@ -57,8 +57,14 @@ export default function Home({ destacados, todos, conteos, productos, preguntas 
                 <div className="absolute inset-x-0 top-0 -z-10 h-40 bg-gradient-to-b from-[#04041c]/80 to-transparent" aria-hidden="true" />
 
                 <div className="mx-auto w-full max-w-6xl px-5 pb-20 pt-32 sm:px-10 md:pt-40 lg:px-16">
-                    <h1 className="hero-sube font-display text-[34px] font-extrabold uppercase leading-[1.05] tracking-tight text-white text-balance sm:text-5xl lg:text-[64px]">
-                        Bienvenidos a {empresa.nombre}
+                    <h1 className="hero-sube font-['Unbounded'] text-[28px] font-extrabold uppercase leading-[1.1] tracking-tight text-white text-balance sm:text-[42px] lg:text-[56px]">
+                        Bienvenidos a{' '}
+                        {/* Colores de la gota del logo, aclarados para leerse sobre la foto oscura. */}
+                        <span className="whitespace-nowrap">
+                            <span className="bg-gradient-to-r from-[#9BEA8C] to-[#3DBE2E] bg-clip-text text-transparent">Always</span>{' '}
+                            <span className="bg-gradient-to-r from-[#A9B3FF] to-[#6270F0] bg-clip-text text-transparent">Clean</span>
+                        </span>{' '}
+                        Colombia
                     </h1>
                     <p
                         className="hero-sube mt-6 max-w-4xl text-[13px] font-bold uppercase leading-relaxed tracking-[0.18em] text-white/70 sm:text-[15px]"
