@@ -12,15 +12,16 @@ const NAV = [
     { label: 'PQRS', route: 'pqrs.create' },
 ];
 
-export default function Header({ showActions = true, compact = false }) {
+// transparente: el header flota sobre la portada (solo en el inicio), con texto y logo blancos.
+export default function Header({ showActions = true, compact = false, transparente = false }) {
     const { empresa } = usePage().props;
     const currentRoute = route().current();
     const [menuAbierto, setMenuAbierto] = useState(false);
     const { unidades } = useCarrito();
 
     return (
-        <div>
-            <div className="hidden items-center justify-between bg-navy px-6 py-2 text-xs font-medium text-white/70 md:flex lg:px-10">
+        <div className={transparente ? 'absolute inset-x-0 top-0 z-30' : ''}>
+            <div className={`hidden items-center justify-between px-6 ${transparente ? 'border-b border-white/10' : 'bg-navy'} py-2 text-xs font-medium text-white/70 md:flex lg:px-10`}>
                 <span>NIT {empresa.nit} · {empresa.ciudad}</span>
                 <div className="flex gap-5">
                     {empresa.telefonos.map((tel) => (
@@ -29,9 +30,13 @@ export default function Header({ showActions = true, compact = false }) {
                     <span>{empresa.correos[0]}</span>
                 </div>
             </div>
-            <div className={`flex items-center justify-between border-b border-mist-300 bg-white px-4 py-2.5 lg:px-10 ${compact ? '' : 'md:py-3'}`}>
+            <div className={`flex items-center justify-between border-b px-4 ${transparente ? 'border-white/15' : 'border-mist-300 bg-white'} py-2.5 lg:px-10 ${compact ? '' : 'md:py-3'}`}>
                 <Link href={route('home')}>
-                    <img src="/images/logo.png" alt="Always Clean Colombia" className={compact ? 'h-12' : 'h-12 md:h-14'} />
+                    {transparente ? (
+                        <img src="/images/logo-blanco.png" alt="Always Clean Colombia" className="h-12 md:h-14" />
+                    ) : (
+                        <img src="/images/logo.png" alt="Always Clean Colombia" className={compact ? 'h-12' : 'h-12 md:h-14'} />
+                    )}
                 </Link>
 
                 <nav className="hidden items-center gap-6 font-display text-[13.5px] font-semibold md:flex">
@@ -39,7 +44,11 @@ export default function Header({ showActions = true, compact = false }) {
                         <Link
                             key={item.route}
                             href={route(item.route)}
-                            className={currentRoute === item.route || currentRoute?.startsWith(item.route.split('.')[0]) ? 'text-green' : 'text-navy-700 hover:text-green'}
+                            className={
+                                currentRoute === item.route || currentRoute?.startsWith(item.route.split('.')[0])
+                                    ? (transparente ? 'text-green-bright' : 'text-green')
+                                    : (transparente ? 'text-white/85 hover:text-green-bright' : 'text-navy-700 hover:text-green')
+                            }
                         >
                             {item.label}
                         </Link>
@@ -51,7 +60,7 @@ export default function Header({ showActions = true, compact = false }) {
                         type="button"
                         onClick={carrito.abrir}
                         aria-label={unidades ? `Ver pedido (${unidades} unidades)` : 'Ver pedido'}
-                        className="relative grid h-9 w-9 place-items-center rounded-lg border border-mist-border text-navy hover:border-navy"
+                        className={`relative grid h-9 w-9 place-items-center rounded-lg border ${transparente ? 'border-white/40 text-white hover:border-white' : 'border-mist-border text-navy hover:border-navy'}`}
                     >
                         <IconoPedido className="h-[18px] w-[18px]" />
                         {unidades > 0 && (
@@ -72,7 +81,7 @@ export default function Header({ showActions = true, compact = false }) {
                         type="button"
                         onClick={() => setMenuAbierto((v) => !v)}
                         aria-label="Abrir menú"
-                        className="grid h-9 w-9 place-items-center rounded-lg border border-mist-border text-navy md:hidden"
+                        className={`grid h-9 w-9 place-items-center rounded-lg border md:hidden ${transparente ? 'border-white/40 text-white' : 'border-mist-border text-navy'}`}
                     >
                         {menuAbierto ? '✕' : '☰'}
                     </button>

@@ -30,7 +30,7 @@ export default function Home({ destacados, todos, conteos, productos, preguntas 
     const totalServicios = todos.length;
 
     return (
-        <SiteLayout title="Limpieza, desinfección y saneamiento en Cartagena">
+        <SiteLayout title="Limpieza, desinfección y saneamiento en Cartagena" headerTransparente>
             {/* Hero */}
             <style>{`
                 @keyframes hero-sube {
@@ -47,15 +47,16 @@ export default function Home({ destacados, todos, conteos, productos, preguntas 
                     .hero-sube, .hero-linea { animation: none; }
                 }
             `}</style>
-            <section className="relative isolate flex min-h-[calc(100dvh/var(--zoom)-4.25rem)] items-center overflow-hidden bg-navy md:min-h-[calc(100dvh/var(--zoom)-7rem)]">
+            <section className="min-h-pantalla relative isolate flex items-center overflow-hidden bg-navy">
                 <img
                     src="/images/servicios/lavado-y-desinfeccion-de-tanques-de-agua.jpg"
                     alt=""
                     className="absolute inset-0 -z-20 h-full w-full object-cover"
                 />
                 <div className="absolute inset-0 -z-10 bg-gradient-to-r from-[#04041c]/95 via-[#04041c]/85 to-navy-deep/60" aria-hidden="true" />
+                <div className="absolute inset-x-0 top-0 -z-10 h-40 bg-gradient-to-b from-[#04041c]/80 to-transparent" aria-hidden="true" />
 
-                <div className="mx-auto w-full max-w-6xl px-5 py-20 sm:px-10 lg:px-16">
+                <div className="mx-auto w-full max-w-6xl px-5 pb-20 pt-32 sm:px-10 md:pt-40 lg:px-16">
                     <h1 className="hero-sube font-display text-[34px] font-extrabold uppercase leading-[1.05] tracking-tight text-white text-balance sm:text-5xl lg:text-[64px]">
                         Bienvenidos a {empresa.nombre}
                     </h1>
