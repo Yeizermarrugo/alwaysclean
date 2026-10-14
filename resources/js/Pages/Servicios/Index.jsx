@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link } from '@inertiajs/react';
 import SiteLayout from '@/Layouts/SiteLayout';
 import ServiceCard from '@/Components/Site/ServiceCard';
+import Revelar from '@/Components/Site/Revelar';
 import { waLink } from '@/lib/whatsapp';
 import { usePage } from '@inertiajs/react';
 
@@ -21,6 +22,7 @@ export default function ServiciosIndex({ servicios, conteos, categoriaActiva, ca
     return (
         <SiteLayout title="Servicios">
             <div className="border-b border-mist-300 bg-mist-50 px-5 py-8 lg:px-10 lg:py-9">
+                <Revelar>
                 <div className="mb-2 text-[12.5px] text-ink-500">
                     <Link href={route('home')} className="hover:text-green-dark">Inicio</Link> / Servicios
                     {categoriaActiva && <> / {categorias[categoriaActiva]}</>}
@@ -31,10 +33,12 @@ export default function ServiciosIndex({ servicios, conteos, categoriaActiva, ca
                 <p className="max-w-[580px] text-[15px] text-navy-500">
                     Por demanda o con cronograma fijo. Toda cotización incluye alcance, insumos, personal asignado y tiempo estimado en sitio.
                 </p>
+                <span className="raya-titulo mt-4" aria-hidden="true" />
+                </Revelar>
             </div>
 
             <div className="grid lg:grid-cols-[236px_1fr]">
-                <aside className="flex flex-col gap-6 border-b border-mist-300 px-5 py-6 lg:border-b-0 lg:border-r lg:px-6 lg:py-7">
+                <Revelar as="aside" efecto="izq" retraso={100} className="flex flex-col gap-6 border-b border-mist-300 px-5 py-6 lg:border-b-0 lg:border-r lg:px-6 lg:py-7">
                     <div>
                         <div className="mb-2.5 text-[11px] font-semibold tracking-[0.13em] text-ink-500">BUSCAR</div>
                         <input
@@ -93,15 +97,17 @@ export default function ServiciosIndex({ servicios, conteos, categoriaActiva, ca
                             Hablar por WhatsApp
                         </a>
                     </div>
-                </aside>
+                </Revelar>
 
                 <div className="px-5 py-6 lg:px-8 lg:py-8">
                     <div className="mb-4 flex items-center justify-between">
                         <span className="text-[13px] text-navy-500">Mostrando {filtrados.length} de {total} servicios</span>
                     </div>
                     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                        {filtrados.map((s) => (
-                            <ServiceCard key={s.id} servicio={s} categoriaLabel={categorias[s.categoria]} />
+                        {filtrados.map((s, i) => (
+                            <Revelar key={s.id} retraso={(i % 3) * 90} className="flex">
+                                <ServiceCard servicio={s} categoriaLabel={categorias[s.categoria]} />
+                            </Revelar>
                         ))}
                     </div>
                     {filtrados.length === 0 && (

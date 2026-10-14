@@ -14,8 +14,14 @@ return [
         // "Compartir > Insertar un mapa" de la ficha: muestra nombre, calificación y "Cómo llegar".
         'embed' => 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d7000!2d-75.48243849491762!3d10.398822724437409!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8ef6251fec0c1f95%3A0x68d68477ed832883!2sALWAYS%20CLEAN%20COLOMBIA%20SAS!5e0!3m2!1ses!2sus!4v1790641527494!5m2!1ses!2sus',
     ],
-    'telefonos' => ['312 810 1340', '317 518 4188', '301 352 3510'],
+    'telefonos' => ['312 810 1340', '317 518 4188'],
     'whatsapp' => '573128101340',
     'correos' => ['comercial@alwaysclean.com.co', 'infoalwaysclean@gmail.com'],
+    // Perfiles oficiales (los mismos que enlaza el sitio anterior, alwaysclean.com.co).
+    'redes' => [
+        'facebook' => 'https://www.facebook.com/pages/category/Product-service/Always-clean-colombia-104126837992962/',
+        'twitter' => 'https://twitter.com/alwaysclean9',
+        'instagram' => 'https://www.instagram.com/alwaysclean.co/',
+    ],
     'horario' => 'Lunes a sábado, 7:00 a 18:00. Urgencias 24/7 por WhatsApp.',
 ];

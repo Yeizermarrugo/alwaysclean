@@ -4,6 +4,8 @@ import ServiceCard from '@/Components/Site/ServiceCard';
 import ServiceRow from '@/Components/Site/ServiceRow';
 import ClientesCarousel from '@/Components/Site/ClientesCarousel';
 import PreguntasFrecuentes from '@/Components/Site/PreguntasFrecuentes';
+import RedesSociales from '@/Components/Site/RedesSociales';
+import Revelar from '@/Components/Site/Revelar';
 import { waLink } from '@/lib/whatsapp';
 
 const SEGMENTOS = [
@@ -29,79 +31,122 @@ export default function Home({ destacados, todos, conteos, productos, preguntas 
     const totalServicios = todos.length;
 
     return (
-        <SiteLayout title="Limpieza, desinfección y saneamiento en Cartagena">
+        <SiteLayout title="Limpieza, desinfección y saneamiento en Cartagena" headerTransparente>
             {/* Hero */}
-            <div className="grid gap-8 bg-mist-50 lg:grid-cols-[1.05fr_.95fr]">
-                <div className="flex flex-col gap-5 self-center px-5 py-12 lg:px-10 lg:py-16">
-                    <div className="self-start rounded-full bg-green-light px-3 py-1.5 text-[11px] font-semibold tracking-[0.12em] text-green-dark">
-                        LIMPIEZA Y DESINFECCIÓN DE ALTA CALIDAD
-                    </div>
-                    <h1 className="font-display text-4xl font-extrabold leading-[1.02] tracking-tight text-navy text-balance lg:text-[54px]">
-                        Servicios integrales de limpieza para empresas de la costa.
+            <style>{`
+                @keyframes hero-sube {
+                    from { opacity: 0; transform: translateY(18px); }
+                    to { opacity: 1; transform: translateY(0); }
+                }
+                @keyframes hero-linea {
+                    from { transform: scaleY(0); }
+                    to { transform: scaleY(1); }
+                }
+                .hero-sube { animation: hero-sube .8s cubic-bezier(.2,.8,.2,1) both; }
+                @keyframes hero-foto {
+                    from { transform: scale(1.14) translate3d(-1.5%, -1%, 0); }
+                    to { transform: scale(1.02) translate3d(1.5%, 1%, 0); }
+                }
+                @keyframes hero-flecha {
+                    0%, 100% { transform: translateY(0); }
+                    50% { transform: translateY(4px); }
+                }
+                .hero-linea { animation: hero-linea 1.2s cubic-bezier(.2,.8,.2,1) .9s both; transform-origin: top; }
+                /* Ida y vuelta sin fin: la foto sigue moviéndose aunque se baje y se vuelva a subir. */
+                .hero-foto { animation: hero-foto 18s ease-in-out infinite alternate both; will-change: transform; }
+                .hero-flecha { animation: hero-flecha 1.6s ease-in-out infinite; }
+                @media (prefers-reduced-motion: reduce) {
+                    .hero-sube, .hero-linea, .hero-foto, .hero-flecha { animation: none; }
+                }
+            `}</style>
+            <section className="min-h-pantalla relative isolate flex items-center overflow-hidden bg-navy">
+                <img
+                    src="/images/servicios/lavado-y-desinfeccion-de-tanques-de-agua.jpg"
+                    alt=""
+                    className="hero-foto absolute inset-0 -z-20 h-full w-full object-cover"
+                />
+                <div className="absolute inset-0 -z-10 bg-gradient-to-r from-[#04041c]/80 via-[#04041c]/50 to-navy-deep/20" aria-hidden="true" />
+                <div className="absolute inset-x-0 top-0 -z-10 h-40 bg-gradient-to-b from-[#04041c]/60 to-transparent" aria-hidden="true" />
+
+                <div className="mx-auto w-full max-w-6xl px-5 pb-20 pt-32 sm:px-10 md:pt-40 lg:px-16">
+                    <h1 className="hero-sube font-['Unbounded'] text-[28px] font-extrabold uppercase leading-[1.1] tracking-tight text-white text-balance sm:text-[42px] lg:text-[56px]">
+                        Bienvenidos a{' '}
+                        {/* Colores de la gota del logo, aclarados para leerse sobre la foto oscura. */}
+                        <span className="whitespace-nowrap">
+                            <span className="bg-gradient-to-r from-[#9BEA8C] to-[#3DBE2E] bg-clip-text text-transparent">Always</span>{' '}
+                            <span className="bg-gradient-to-r from-[#A9B3FF] to-[#6270F0] bg-clip-text text-transparent">Clean</span>
+                        </span>{' '}
+                        Colombia
                     </h1>
-                    <p className="max-w-[480px] text-[17px] leading-relaxed text-navy-600 text-pretty">
+                    <p
+                        className="hero-sube mt-6 max-w-4xl text-[13px] font-bold uppercase leading-relaxed tracking-[0.18em] text-white/90 [text-shadow:0_1px_12px_rgba(4,4,28,.7)] sm:text-[15px]"
+                        style={{ animationDelay: '.15s' }}
+                    >
                         Limpieza, desinfección, saneamiento básico y obras civiles con personal certificado en trabajo en altura y productos biodegradables.
                     </p>
-                    <div className="mt-1.5 flex flex-wrap gap-3">
+                    <div className="hero-sube mt-12 flex flex-wrap gap-4" style={{ animationDelay: '.3s' }}>
                         <Link
                             href={route('contacto.create')}
-                            className="rounded-[9px] bg-green px-[22px] py-3.5 font-display text-[15px] font-semibold text-white"
+                            className="border-2 border-white px-7 py-4 font-display text-[13px] font-bold uppercase tracking-[0.16em] text-white transition-colors duration-200 hover:border-green hover:bg-green"
                         >
-                            Solicitar cotización gratis
+                            Solicitar cotización
                         </Link>
                         <Link
-                            href={route('servicios.index')}
-                            className="rounded-[9px] border-[1.5px] border-mist-border bg-white px-[22px] py-3.5 font-display text-[15px] font-semibold text-navy"
+                            href={route('nosotros.index')}
+                            className="border-2 border-white px-7 py-4 font-display text-[13px] font-bold uppercase tracking-[0.16em] text-white transition-colors duration-200 hover:bg-white hover:text-navy"
                         >
-                            Ver los {totalServicios} servicios
+                            Sobre nosotros
                         </Link>
                     </div>
-                    <div className="mt-3.5 flex flex-wrap gap-8 border-t border-mist-300 pt-5">
-                        <div>
-                            <div className="font-display text-2xl font-extrabold text-navy">{totalServicios}</div>
-                            <div className="text-[12.5px] text-navy-500">servicios activos</div>
-                        </div>
-                        <div>
-                            <div className="font-display text-2xl font-extrabold text-navy">&lt;24 h</div>
-                            <div className="text-[12.5px] text-navy-500">respuesta a cotización</div>
-                        </div>
-                        <div>
-                            <div className="font-display text-2xl font-extrabold text-navy">0491 / 1409</div>
-                            <div className="text-[12.5px] text-navy-500">resoluciones vigentes</div>
-                        </div>
-                    </div>
+                    <RedesSociales className="hero-sube mt-10 flex gap-3 lg:hidden" />
                 </div>
-                <img
-                    src="https://images.unsplash.com/photo-1627905646269-7f034dcc5738?auto=format&fit=crop&w=1200&q=75"
-                    alt="Cuadrilla de aseo en operación"
-                    className="min-h-[280px] w-full object-cover lg:min-h-[520px]"
-                />
-            </div>
+
+                <RedesSociales className="absolute right-6 top-1/2 hidden -translate-y-1/2 flex-col gap-3 lg:flex xl:right-10" />
+
+                <a
+                    href="#segmentos"
+                    className="absolute bottom-0 right-28 hidden items-start gap-3 font-display text-[11px] font-bold uppercase tracking-[0.22em] text-white md:flex lg:right-32"
+                >
+                    <span className="flex items-center gap-2 pt-1">
+                        <svg viewBox="0 0 24 24" className="hero-flecha h-4 w-4 text-green" fill="none" stroke="currentColor" strokeWidth="2.5" aria-hidden="true">
+                            <path d="m6 9 6 6 6-6" />
+                        </svg>
+                        Sigue navegando
+                    </span>
+                    <span className="hero-linea block h-24 w-0.5 bg-green" aria-hidden="true" />
+                </a>
+            </section>
 
             {/* Segmentos */}
-            <div className="grid divide-y divide-mist-300 border-b border-mist-300 md:grid-cols-3 md:divide-x md:divide-y-0">
-                {SEGMENTOS.map((s) => (
-                    <div key={s.kicker} className="flex flex-col gap-1.5 px-6 py-6 lg:px-8">
+            <div id="segmentos" className="scroll-mt-4 grid divide-y divide-mist-300 border-b border-mist-300 md:grid-cols-3 md:divide-x md:divide-y-0">
+                {SEGMENTOS.map((s, i) => (
+                    <Revelar
+                        key={s.kicker}
+                        retraso={i * 120}
+                        className="group relative flex flex-col gap-1.5 px-6 py-6 transition-colors duration-300 hover:bg-mist-50 lg:px-8"
+                    >
+                        <span className="absolute inset-x-0 top-0 h-[3px] origin-left scale-x-0 bg-green transition-transform duration-500 group-hover:scale-x-100" aria-hidden="true" />
                         <div className="font-sans text-[11px] font-semibold tracking-[0.14em] text-green-dark">{s.kicker.toUpperCase()}</div>
                         <div className="text-[14.5px] leading-relaxed text-navy-600">{s.texto}</div>
-                    </div>
+                    </Revelar>
                 ))}
             </div>
 
             {/* Servicios más solicitados */}
             <div className="px-5 py-12 lg:px-10 lg:py-14">
-                <div className="mb-5 flex flex-col justify-between gap-3 md:flex-row md:items-end">
+                <Revelar className="mb-5 flex flex-col justify-between gap-3 md:flex-row md:items-end">
                     <div>
+                        <span className="raya-titulo mb-3" aria-hidden="true" />
                         <h2 className="mb-1.5 font-display text-[28px] font-extrabold tracking-tight text-navy lg:text-[32px]">
                             Nuestros servicios más solicitados
                         </h2>
                         <p className="text-[15px] text-navy-500">{totalServicios} servicios en tres líneas de trabajo.</p>
                     </div>
-                    <Link href={route('servicios.index')} className="font-display text-[13.5px] font-semibold text-green-dark">
-                        Ver el portafolio completo →
+                    <Link href={route('servicios.index')} className="group font-display text-[13.5px] font-semibold text-green-dark hover:text-green">
+                        Ver el portafolio completo <span className="inline-block transition-transform group-hover:translate-x-1">→</span>
                     </Link>
-                </div>
-                <div className="mb-6 flex flex-wrap gap-2">
+                </Revelar>
+                <Revelar retraso={100} className="mb-6 flex flex-wrap gap-2">
                     <Link href={route('servicios.index')} className="rounded-full bg-navy px-[15px] py-2 font-display text-[13px] font-semibold text-white">
                         Todos
                     </Link>
@@ -109,39 +154,42 @@ export default function Home({ destacados, todos, conteos, productos, preguntas 
                         <Link
                             key={key}
                             href={route('servicios.index', { categoria: key })}
-                            className="rounded-full bg-mist-100 px-[15px] py-2 font-display text-[13px] font-semibold text-navy-700"
+                            className="rounded-full bg-mist-100 px-[15px] py-2 font-display text-[13px] font-semibold text-navy-700 transition-colors hover:bg-green-light hover:text-green-dark"
                         >
                             {label} · {conteos[key] ?? 0}
                         </Link>
                     ))}
-                </div>
+                </Revelar>
                 <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
-                    {destacados.map((s) => (
-                        <ServiceCard key={s.id} servicio={s} />
+                    {destacados.map((s, i) => (
+                        <Revelar key={s.id} retraso={(i % 4) * 90} className="flex">
+                            <ServiceCard servicio={s} />
+                        </Revelar>
                     ))}
                 </div>
-                <div className="mt-7 grid grid-cols-1 gap-x-10 gap-y-0.5 border-t border-mist-300 pt-6 md:grid-cols-3">
+                <Revelar className="mt-7 grid grid-cols-1 gap-x-10 gap-y-0.5 border-t border-mist-300 pt-6 md:grid-cols-3">
                     {todos.map((s) => (
                         <ServiceRow key={s.id} servicio={s} />
                     ))}
-                </div>
+                </Revelar>
             </div>
 
             {/* Valores */}
             <div className="grid gap-9 bg-navy px-5 py-12 md:grid-cols-3 lg:px-10">
-                {VALORES.map((v) => (
-                    <div key={v.titulo} className="flex flex-col gap-2.5">
-                        <div className="h-[3px] w-[34px] bg-green" />
+                {VALORES.map((v, i) => (
+                    <Revelar key={v.titulo} retraso={i * 140} className="group flex flex-col gap-2.5">
+                        <div className="h-[3px] w-[34px] bg-green transition-all duration-500 group-hover:w-20 group-hover:bg-green-bright" />
                         <div className="font-display text-[19px] font-bold text-white">{v.titulo}</div>
-                        <div className="text-[14.5px] leading-relaxed text-white/68">{v.texto}</div>
-                    </div>
+                        <div className="text-[14.5px] leading-relaxed text-white/68 transition-colors group-hover:text-white/90">{v.texto}</div>
+                    </Revelar>
                 ))}
             </div>
 
             {/* Productos */}
             <div className="bg-mist-50 px-5 py-12 lg:px-10 lg:py-14">
-                <div className="mb-7 flex flex-col items-start justify-between gap-3 sm:flex-row sm:items-end">
+                <Revelar className="mb-7 flex flex-col items-start justify-between gap-3 sm:flex-row sm:items-end">
                     <div>
+                        <span className="raya-titulo mb-3" aria-hidden="true" />
                         <div className="mb-1.5 font-sans text-[11px] font-semibold tracking-[0.14em] text-green-dark">LÍNEA PROPIA</div>
                         <h2 className="mb-2 font-display text-[26px] font-extrabold tracking-tight text-navy lg:text-[30px]">
                             Productos especializados
@@ -152,18 +200,18 @@ export default function Home({ destacados, todos, conteos, productos, preguntas 
                     </div>
                     <Link
                         href={route('productos.index')}
-                        className="whitespace-nowrap font-display text-[13.5px] font-semibold text-green-dark hover:text-green"
+                        className="group whitespace-nowrap font-display text-[13.5px] font-semibold text-green-dark hover:text-green"
                     >
-                        Ver catálogo completo →
+                        Ver catálogo completo <span className="inline-block transition-transform group-hover:translate-x-1">→</span>
                     </Link>
-                </div>
+                </Revelar>
 
                 <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
-                    {productos.map((p) => (
+                    {productos.map((p, i) => (
+                        <Revelar key={p.id} retraso={i * 120} className="flex">
                         <Link
-                            key={p.id}
                             href={route('productos.index')}
-                            className="group flex flex-col overflow-hidden rounded-xl border border-mist-300 bg-white transition-shadow hover:shadow-[0_12px_32px_-12px_rgba(15,23,42,0.25)]"
+                            className="group flex w-full flex-col overflow-hidden rounded-xl border border-mist-300 bg-white transition duration-300 hover:-translate-y-1 hover:border-green/40 hover:shadow-[0_18px_40px_-16px_rgba(15,23,42,0.3)]"
                         >
                             <div className="h-[170px] overflow-hidden">
                                 {p.imagen_url ? (
@@ -184,15 +232,16 @@ export default function Home({ destacados, todos, conteos, productos, preguntas 
                                 <div className="mt-2 text-[12px] font-medium text-ink-500">{p.presentacion}</div>
                             </div>
                         </Link>
+                        </Revelar>
                     ))}
                 </div>
 
-                <div className="mt-6 flex flex-col items-start gap-4 overflow-hidden rounded-xl border border-green/30 bg-green-light px-6 py-5 sm:flex-row sm:items-center sm:justify-between sm:py-0 sm:pl-3">
+                <Revelar efecto="zoom" className="group mt-6 flex flex-col items-start gap-4 overflow-hidden rounded-xl border border-green/30 bg-green-light px-6 py-5 sm:flex-row sm:items-center sm:justify-between sm:py-0 sm:pl-3">
                     <div className="flex items-center gap-4">
                         <img
                             src="/images/bono-bienvenida.png"
                             alt=""
-                            className="hidden h-[104px] w-auto self-end sm:block"
+                            className="hidden h-[104px] w-auto origin-bottom self-end transition-transform duration-500 group-hover:-rotate-3 group-hover:scale-105 sm:block"
                             loading="lazy"
                         />
                         <div>
@@ -204,24 +253,27 @@ export default function Home({ destacados, todos, conteos, productos, preguntas 
                         href={waLink(empresa.whatsapp, 'Hola, quiero reclamar el bono de bienvenida del 10%.')}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="whitespace-nowrap rounded-lg bg-green px-5 py-2.5 font-display text-[13px] font-semibold text-white"
+                        className="whitespace-nowrap rounded-lg bg-green px-5 py-2.5 font-display text-[13px] font-semibold text-white shadow-[0_8px_20px_-8px_rgba(47,170,34,0.7)] transition hover:-translate-y-0.5 hover:bg-green-dark"
                     >
                         Reclamar bono
                     </a>
-                </div>
+                </Revelar>
             </div>
 
             {/* Preguntas frecuentes y avales */}
             <PreguntasFrecuentes preguntas={preguntas} />
 
             {/* Clientes que nos respaldan */}
-            <div className="border-t border-mist-300 px-5 pt-10 lg:px-10">
+            <Revelar className="border-t border-mist-300 px-5 pt-10 lg:px-10">
+                <span className="raya-titulo mx-auto mb-3" aria-hidden="true" />
                 <div className="mb-1 text-center font-sans text-[11px] font-semibold tracking-[0.14em] text-green-dark">
                     CLIENTES QUE NOS RESPALDAN
                 </div>
                 <p className="mb-2 text-center text-[14.5px] text-navy-500">Empresas y entidades que confían en Always Clean.</p>
-            </div>
-            <ClientesCarousel />
+            </Revelar>
+            <Revelar retraso={150}>
+                <ClientesCarousel />
+            </Revelar>
         </SiteLayout>
     );
 }
