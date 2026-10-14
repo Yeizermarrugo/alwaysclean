@@ -30,9 +30,23 @@ export default function Footer() {
                 <div className="mb-2 font-display text-[12.5px] font-semibold text-white">Sede</div>
                 {empresa.direccion}<br />{empresa.ciudad.split(',')[0] ?? empresa.ciudad}<br />Bolívar, Colombia
             </div>
-            <div className="col-span-2 flex flex-col-reverse items-start justify-between gap-4 border-t border-white/10 pt-6 sm:flex-row sm:items-center sm:pr-24 lg:col-span-4">
-                <span className="text-[12.5px]">© {new Date().getFullYear()} {empresa.razon_social}</span>
-                <RedesSociales className="flex gap-2.5" conWhatsapp={false} discreto />
+            {/* Redes a la izquierda: a la derecha quedarían bajo el botón flotante de WhatsApp y su globo de hover. */}
+            <div className="col-span-2 flex flex-col items-start justify-between gap-4 border-t border-white/10 pt-6 sm:flex-row sm:items-center sm:pr-24 lg:col-span-4">
+                <RedesSociales className="flex gap-2.5" discreto />
+                <div className="flex flex-col gap-0.5 sm:items-end">
+                    <span className="text-[12.5px]">© {new Date().getFullYear()} {empresa.razon_social}</span>
+                    <span className="text-[11.5px] text-white/40">
+                        Desarrollado por{' '}
+                        <a
+                            href="https://yeizermarrugo.github.io/mi-portafolio/"
+                            target="_blank"
+                            rel="noopener"
+                            className="font-semibold text-white/60 underline-offset-2 transition-colors hover:text-green-bright hover:underline"
+                        >
+                            Yeizer Marrugo
+                        </a>
+                    </span>
+                </div>
             </div>
         </footer>
     );
