@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-/** Preguntas frecuentes (acordeón) + entidades que avalan a la empresa. */
+/** Preguntas frecuentes (acordeón) + certificaciones y entidades que avalan a la empresa. */
 export default function PreguntasFrecuentes({ preguntas }) {
     const [abierta, setAbierta] = useState(0);
 
@@ -42,7 +42,13 @@ export default function PreguntasFrecuentes({ preguntas }) {
             </div>
 
             <aside className="self-start rounded-2xl border border-mist-300 bg-mist-50 p-6">
-                <div className="mb-4 font-sans text-[11px] font-semibold tracking-[0.14em] text-ink-500">AVALADOS POR</div>
+                {/* Sellos de la portada del PDF de portafolio (pág. 01). */}
+                <div className="mb-4 font-sans text-[11px] font-semibold tracking-[0.14em] text-ink-500">CERTIFICADOS</div>
+                <div className="grid grid-cols-2 gap-3">
+                    <Aval src="/images/avales/icontec-iso9001.png" alt="Certificado ICONTEC · ISO 9001" />
+                    <Aval src="/images/avales/iqnet.png" alt="IQNET · Certified Management System" />
+                </div>
+                <div className="mb-4 mt-6 font-sans text-[11px] font-semibold tracking-[0.14em] text-ink-500">AVALADOS POR</div>
                 <div className="grid grid-cols-2 gap-3">
                     <Aval src="/images/avales/dadis.svg" alt="DADIS · Departamento Administrativo Distrital de Salud" />
                     <Aval src="/images/avales/epa.png" alt="EPA Cartagena · Establecimiento Público Ambiental" />
