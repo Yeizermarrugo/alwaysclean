@@ -21,7 +21,7 @@ export default function Header({ showActions = true, compact = false, transparen
 
     return (
         <div className={transparente ? 'absolute inset-x-0 top-0 z-30' : ''}>
-            <div className={`hidden items-center justify-between px-6 ${transparente ? 'border-b border-white/10' : 'bg-navy'} py-2 text-xs font-medium text-white/70 md:flex lg:px-10`}>
+            <div className={`hidden items-center justify-between px-6 ${transparente ? '' : 'bg-navy'} py-2 text-xs font-medium text-white/70 md:flex lg:px-10`}>
                 <span>NIT {empresa.nit} · {empresa.ciudad}</span>
                 <div className="flex gap-5">
                     {empresa.telefonos.map((tel) => (
@@ -30,7 +30,7 @@ export default function Header({ showActions = true, compact = false, transparen
                     <span>{empresa.correos[0]}</span>
                 </div>
             </div>
-            <div className={`flex items-center justify-between border-b px-4 ${transparente ? 'border-white/15' : 'border-mist-300 bg-white'} py-2.5 lg:px-10 ${compact ? '' : 'md:py-3'}`}>
+            <div className={`flex items-center justify-between px-4 ${transparente ? '' : 'border-b border-mist-300 bg-white'} py-2.5 lg:px-10 ${compact ? '' : 'md:py-3'}`}>
                 <Link href={route('home')}>
                     {transparente ? (
                         <img src="/images/logo-blanco.png" alt="Always Clean Colombia" className="h-12 md:h-14" />

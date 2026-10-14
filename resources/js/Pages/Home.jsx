@@ -42,19 +42,30 @@ export default function Home({ destacados, todos, conteos, productos, preguntas 
                     to { transform: scaleY(1); }
                 }
                 .hero-sube { animation: hero-sube .8s cubic-bezier(.2,.8,.2,1) both; }
+                @keyframes hero-foto {
+                    from { transform: scale(1.14) translate3d(-1.5%, -1%, 0); }
+                    to { transform: scale(1.02) translate3d(1.5%, 1%, 0); }
+                }
+                @keyframes hero-flecha {
+                    0%, 100% { transform: translateY(0); }
+                    50% { transform: translateY(4px); }
+                }
                 .hero-linea { animation: hero-linea 1.2s cubic-bezier(.2,.8,.2,1) .9s both; transform-origin: top; }
+                /* Ida y vuelta sin fin: la foto sigue moviéndose aunque se baje y se vuelva a subir. */
+                .hero-foto { animation: hero-foto 18s ease-in-out infinite alternate both; will-change: transform; }
+                .hero-flecha { animation: hero-flecha 1.6s ease-in-out infinite; }
                 @media (prefers-reduced-motion: reduce) {
-                    .hero-sube, .hero-linea { animation: none; }
+                    .hero-sube, .hero-linea, .hero-foto, .hero-flecha { animation: none; }
                 }
             `}</style>
             <section className="min-h-pantalla relative isolate flex items-center overflow-hidden bg-navy">
                 <img
                     src="/images/servicios/lavado-y-desinfeccion-de-tanques-de-agua.jpg"
                     alt=""
-                    className="absolute inset-0 -z-20 h-full w-full object-cover"
+                    className="hero-foto absolute inset-0 -z-20 h-full w-full object-cover"
                 />
-                <div className="absolute inset-0 -z-10 bg-gradient-to-r from-[#04041c]/95 via-[#04041c]/85 to-navy-deep/60" aria-hidden="true" />
-                <div className="absolute inset-x-0 top-0 -z-10 h-40 bg-gradient-to-b from-[#04041c]/80 to-transparent" aria-hidden="true" />
+                <div className="absolute inset-0 -z-10 bg-gradient-to-r from-[#04041c]/80 via-[#04041c]/50 to-navy-deep/20" aria-hidden="true" />
+                <div className="absolute inset-x-0 top-0 -z-10 h-40 bg-gradient-to-b from-[#04041c]/60 to-transparent" aria-hidden="true" />
 
                 <div className="mx-auto w-full max-w-6xl px-5 pb-20 pt-32 sm:px-10 md:pt-40 lg:px-16">
                     <h1 className="hero-sube font-['Unbounded'] text-[28px] font-extrabold uppercase leading-[1.1] tracking-tight text-white text-balance sm:text-[42px] lg:text-[56px]">
@@ -67,7 +78,7 @@ export default function Home({ destacados, todos, conteos, productos, preguntas 
                         Colombia
                     </h1>
                     <p
-                        className="hero-sube mt-6 max-w-4xl text-[13px] font-bold uppercase leading-relaxed tracking-[0.18em] text-white/70 sm:text-[15px]"
+                        className="hero-sube mt-6 max-w-4xl text-[13px] font-bold uppercase leading-relaxed tracking-[0.18em] text-white/90 [text-shadow:0_1px_12px_rgba(4,4,28,.7)] sm:text-[15px]"
                         style={{ animationDelay: '.15s' }}
                     >
                         Limpieza, desinfección, saneamiento básico y obras civiles con personal certificado en trabajo en altura y productos biodegradables.
@@ -96,7 +107,7 @@ export default function Home({ destacados, todos, conteos, productos, preguntas 
                     className="absolute bottom-0 right-28 hidden items-start gap-3 font-display text-[11px] font-bold uppercase tracking-[0.22em] text-white md:flex lg:right-32"
                 >
                     <span className="flex items-center gap-2 pt-1">
-                        <svg viewBox="0 0 24 24" className="h-4 w-4 text-green" fill="none" stroke="currentColor" strokeWidth="2.5" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" className="hero-flecha h-4 w-4 text-green" fill="none" stroke="currentColor" strokeWidth="2.5" aria-hidden="true">
                             <path d="m6 9 6 6 6-6" />
                         </svg>
                         Sigue navegando
