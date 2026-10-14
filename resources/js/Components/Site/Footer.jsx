@@ -1,10 +1,11 @@
 import { Link, usePage } from '@inertiajs/react';
+import RedesSociales from '@/Components/Site/RedesSociales';
 
 export default function Footer() {
     const { empresa } = usePage().props;
 
     return (
-        <footer className="grid grid-cols-2 gap-8 bg-navy-deep px-6 py-10 text-[13.5px] leading-[1.7] text-white/60 lg:grid-cols-[1.3fr_1fr_1fr_1fr] lg:px-10 lg:py-10">
+        <footer className="grid grid-cols-2 gap-8 bg-navy-deep px-6 pb-24 pt-10 text-[13.5px] leading-[1.7] text-white/60 lg:grid-cols-[1.3fr_1fr_1fr_1fr] sm:pb-10 lg:px-10 lg:pt-10">
             <div>
                 <div className="mb-2 font-display text-[15px] font-extrabold text-white">
                     {empresa.nombre.toUpperCase()}
@@ -28,6 +29,10 @@ export default function Footer() {
             <div>
                 <div className="mb-2 font-display text-[12.5px] font-semibold text-white">Sede</div>
                 {empresa.direccion}<br />{empresa.ciudad.split(',')[0] ?? empresa.ciudad}<br />Bolívar, Colombia
+            </div>
+            <div className="col-span-2 flex flex-col-reverse items-start justify-between gap-4 border-t border-white/10 pt-6 sm:flex-row sm:items-center sm:pr-24 lg:col-span-4">
+                <span className="text-[12.5px]">© {new Date().getFullYear()} {empresa.razon_social}</span>
+                <RedesSociales className="flex gap-2.5" conWhatsapp={false} discreto />
             </div>
         </footer>
     );

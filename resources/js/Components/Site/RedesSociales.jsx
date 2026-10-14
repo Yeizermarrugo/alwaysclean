@@ -20,9 +20,10 @@ const NOMBRES = { facebook: 'Facebook', twitter: 'X (Twitter)', instagram: 'Inst
 
 /**
  * Botones redondos con las redes de config('company.redes') + WhatsApp.
- * `className` define la disposición (columna en el hero, fila en móvil).
+ * `className` define la disposición (columna en el hero, fila en móvil);
+ * `discreto` = versión más pequeña y tenue para el footer.
  */
-export default function RedesSociales({ className = '', conWhatsapp = true }) {
+export default function RedesSociales({ className = '', conWhatsapp = true, discreto = false }) {
     const { empresa } = usePage().props;
 
     const enlaces = Object.entries(empresa.redes ?? {}).map(([red, url]) => ({ red, url }));
@@ -40,9 +41,11 @@ export default function RedesSociales({ className = '', conWhatsapp = true }) {
                         rel="noopener noreferrer"
                         aria-label={`Always Clean en ${NOMBRES[red]}`}
                         title={NOMBRES[red]}
-                        className="grid h-10 w-10 place-items-center rounded-full border-2 border-white/90 text-white transition-colors duration-200 hover:border-green hover:bg-green focus-visible:border-green focus-visible:bg-green focus-visible:outline-none"
+                        className={`grid place-items-center rounded-full transition-colors duration-200 hover:border-green hover:bg-green focus-visible:border-green focus-visible:bg-green focus-visible:outline-none ${
+                            discreto ? 'h-9 w-9 border border-white/25 text-white/80 hover:text-white' : 'h-10 w-10 border-2 border-white/90 text-white'
+                        }`}
                     >
-                        <svg viewBox="0 0 24 24" className="h-[18px] w-[18px]" fill="currentColor" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" className={discreto ? 'h-4 w-4' : 'h-[18px] w-[18px]'} fill="currentColor" aria-hidden="true">
                             {ICONOS[red]}
                         </svg>
                     </a>
